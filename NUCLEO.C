@@ -98,14 +98,21 @@ void far dispara_sistema(){
 	transfer(desc_dispara, d_esc);
 }
 
-/*
+
 void far termina_processo(){
-	PTR_DESC_PROC proc_termina;
+	PTR_DESC_PROC p_aux;
 	disable();
 	prim->estado = terminado;
-	p_aux = procura_proximo_ativo();
-	proc_termina = prim;
-	prim = p_aux;
+	p_aux = prim;
+	prim = procura_proximo_ativo();
+	if (prim == NULL)
+		volta_dos();
+	trasnfer(p_aux->contexto, prim->contexto);
+}
+
+void far volta_dos(){
+	disable();
+	setvect(p_est->int_anterior, 8);
 	enable();
-	trasnfer(proc_termina->contexto, prim->contexto);
-}*/
+	exit(0);
+}
