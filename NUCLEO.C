@@ -37,17 +37,20 @@ void far insere_fila_prontos(PTR_DESC_PROC p){
 }
 
 PTR_DESC_PROC far procura_proximo_ativo(){
-	PTR_DESC_PROC p;
+	PTR_DESC_PROC p_aux;
 
-	p = prim;
+	/* começa busca pelo próximo processo a partir do próximo descritor de processos apontador por prim */
+	prim = prim->prox_desc;
+	
+	p_aux = prim;
 
-	while (p->prox_desc->estado != ativo && p->prox_desc != prim){
-		p = p->prox_desc;
+	while (p_aux->estado != ativo && p_aux->prox_desc != prim){
+		p_aux = p_aux->prox_desc;
 	}
 
-	if (p->prox_desc == prim)
+	if (p_aux->prox_desc == prim)
 		return NULL;
-	return p->prox_desc;
+	return p_aux;
 }
 
 /* cria processo e adiciona na fila de processos prontos (por enquanto)
@@ -78,11 +81,10 @@ void far escalador(){
 	while(1){
 		iotransfer();
 		disable();
-		prim = prim->prox_desc;
-		/*prim = procura_proximo_ativo();
+		prim = procura_proximo_ativo();
 
 		if (prim == NULL)
-			volta_dos();*/
+			volta_dos();
 		p_est->p_destino = prim->contexto;
 		enable();
 	}
