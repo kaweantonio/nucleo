@@ -114,5 +114,5 @@ void far termina_processo(){
 	prim = procura_proximo_ativo();
 	if (prim == NULL)
 		volta_dos();
-	trasnfer(p_aux->contexto, prim->contexto);
+	transfer(p_aux->contexto, prim->contexto);
 }
