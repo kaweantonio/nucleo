@@ -75,7 +75,7 @@ void far cria_processo(void far(*end_proc)(), char nome_proc[35]){
 
 void far volta_dos(){
 	disable();
-	setvect(p_est->int_anterior, 8);
+	setvect(8, p_est->int_anterior);
 	enable();
 	exit(0);
 }
