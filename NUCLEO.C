@@ -73,6 +73,13 @@ void far cria_processo(void far(*end_proc)(), char nome_proc[35]){
 	insere_fila_prontos(p_aux);
 }
 
+void far volta_dos(){
+	disable();
+	setvect(p_est->int_anterior, 8);
+	enable();
+	exit(0);
+}
+
 void far escalador(){
 	p_est->p_origem = d_esc;
 	p_est->p_destino = prim->contexto;
@@ -108,11 +115,4 @@ void far termina_processo(){
 	if (prim == NULL)
 		volta_dos();
 	trasnfer(p_aux->contexto, prim->contexto);
-}
-
-void far volta_dos(){
-	disable();
-	setvect(p_est->int_anterior, 8);
-	enable();
-	exit(0);
 }
