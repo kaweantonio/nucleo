@@ -15,6 +15,7 @@ typedef DESCRITOR_PROC *PTR_DESC_PROC;
 
 /* vairáveis globais */
 PTR_DESC_PROC prim = NULL; /* cabeça da fila dos processos prontos */
+PTR_DESC_PROC p_salva;
 
 PTR_DESC d_esc; /* ponteiro para o descritor da co-rotina do escalador */
 
@@ -36,6 +37,18 @@ void far insere_fila_prontos(PTR_DESC_PROC p){
 	p->prox_desc = prim;
 }
 
+void far imprime_fila_processos(){
+	PTR_DESC_PROC p_aux;
+	p_aux = p_salva->prox_desc;
+	do {
+		printf("Nome: %s\t Estado: ", p_aux->nome);
+		if (p_aux->estado == terminado)
+			printf("terminado\n");
+		else printf("ativo\n");
+		p_aux = p_aux->prox_desc;
+	} while (p_aux != p_salva->prox_desc);
+}
+
 PTR_DESC_PROC far procura_proximo_ativo(){
 	PTR_DESC_PROC p_aux;
 
@@ -48,8 +61,10 @@ PTR_DESC_PROC far procura_proximo_ativo(){
 		p_aux = p_aux->prox_desc;
 	}
 
-	if (p_aux->prox_desc == prim)
+	if (p_aux->prox_desc == prim){
+		p_salva = prim;
 		return NULL;
+	}
 	return p_aux;
 }
 
@@ -77,6 +92,7 @@ void far volta_dos(){
 	disable();
 	setvect(8, p_est->int_anterior);
 	enable();
+	imprime_fila_processos();
 	exit(0);
 }
 
