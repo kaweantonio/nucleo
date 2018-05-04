@@ -4,21 +4,30 @@
 PTR_DESC_PROC p1, p2;
 
 void far processo1(){
-	while(1){
-		printf("1");
+	int i = 0;
+	while(i < 10000){
+		printf("Processo 1\t");
+		i++;
 	}
+	termina_processo();
 }
 
 void far processo2(){
-	while(1){
-		printf("2");
+	int i = 0;
+	while(i < 10000){
+		printf("Processo 2\t");
+		i++;
 	}
+	termina_processo();
 }
 
 void far processo3(){
-	while(1){
-		printf("3");
+	int i = 0;
+	while(i < 10000){
+		printf("Processo 3\t");
+		i++;
 	}
+	termina_processo();
 }
 
 main(){
