@@ -119,7 +119,7 @@ void far dispara_sistema(){
 	transfer(desc_dispara, d_esc);
 }
 
-
+/* termina_processo para quando se deseja salvar a fatia de tempo restante que o processo teria caso não tivesse terminado
 void far termina_processo(){
 	PTR_DESC_PROC p_aux;
 	disable();
@@ -129,4 +129,12 @@ void far termina_processo(){
 	if (prim == NULL)
 		volta_dos();
 	transfer(p_aux->contexto, prim->contexto);
+}*/
+
+/* termina_processo que ignora fatia de tempo perdida pelo processo */
+void far termina_processo(){
+	disable();
+	prim->estado = terminado;
+	enable();
+	while(1);
 }
