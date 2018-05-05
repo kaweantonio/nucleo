@@ -15,10 +15,16 @@ typedef DESCRITOR_PROC *PTR_DESC_PROC;
 
 extern void far insere_fila_prontos(PTR_DESC_PROC p);
 
+extern void far imprime_fila_processos();
+
 extern PTR_DESC_PROC far procura_proximo_ativo();
 
 extern void far cria_processo(void far(*end_proc)(), char nome_proc[35]);
 
+extern void far volta_dos();
+
 extern void far escalador();
 
 extern void far dispara_sistema();
+
+extern void termina_processo();
