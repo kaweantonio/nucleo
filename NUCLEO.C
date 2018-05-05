@@ -52,16 +52,14 @@ void far imprime_fila_processos(){
 PTR_DESC_PROC far procura_proximo_ativo(){
 	PTR_DESC_PROC p_aux;
 
-	/* começa busca pelo próximo processo a partir do próximo descritor de processos apontador por prim */
-	prim = prim->prox_desc;
-	
-	p_aux = prim;
+	/* começa busca pelo próximo processo a partir do próximo descritor de processos apontador por prim */	
+	p_aux = prim->prox_desc;
 
-	while (p_aux->estado != ativo && p_aux->prox_desc != prim){
+	while (p_aux->estado != ativo && p_aux->prox_desc != prim->prox_desc){
 		p_aux = p_aux->prox_desc;
 	}
 
-	if (p_aux->prox_desc == prim){
+	if (p_aux->prox_desc == prim->prox_desc && prim->estado == terminado){
 		p_salva = prim;
 		return NULL;
 	}
