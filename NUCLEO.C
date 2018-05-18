@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/* Esturucta do Descritor de Processo (BCP) */
+/* Estrutura do Descritor de Processo (BCP) */
 typedef struct desc_p {
 	char nome[35];
 	enum { ativo, terminado} estado;
