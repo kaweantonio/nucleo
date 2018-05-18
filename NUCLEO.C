@@ -2,6 +2,17 @@
 #include <stdio.h>
 #include <string.h>
 
+/* Estrutura para Registros do endereço do flag INDOS retornado pela função 0x34 */
+typedef struct registros {
+	unsigned bx1, es1;
+} regis;
+
+/* Union da estrutura Regis para uma variável de 2 bytes (char) */
+typedef union k {
+	regis x;
+	char far *y;
+} APONTA_REG_CRIT;
+
 /* Estrutura do Descritor de Processo (BCP) */
 typedef struct desc_p {
 	char nome[35];
@@ -14,6 +25,7 @@ typedef struct desc_p {
 typedef DESCRITOR_PROC *PTR_DESC_PROC; 
 
 /* vairáveis globais */
+APONTA_REG_CRIT a; /* cria variável a para acesso ao flag INDOS */
 PTR_DESC_PROC prim = NULL; /* cabeça da fila dos processos prontos */
 PTR_DESC_PROC p_salva;
 
