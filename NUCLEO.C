@@ -107,18 +107,32 @@ void far volta_dos(){
 }
 
 void far escalador(){
+	int i;
 	p_est->p_origem = d_esc;
 	p_est->p_destino = prim->contexto;
 	p_est->num_vetor = 8;
 
+	/* inicia ponteiro para Região Crítica do DOS */
+	_AH = 0x34;
+	_AL = 0x00;
+	geninterrupt(0x21);
+	a.x.bx1 = _BX;
+	a.x.es1 = _ES;
+
 	while(1){
 		iotransfer();
 		disable();
-		prim = procura_proximo_ativo();
-
-		if (prim == NULL)
-			volta_dos();
-		p_est->p_destino = prim->contexto;
+		
+		/*  verifica se processo ainda está usando algum recurso do DOS (chamada ao DOS).
+			Caso verdadeiro, processo está na R.C, portanto não escalona outro processo.
+			Se falso, processo não está na R.C, portanto escalona outro processo normalmente.
+		*/
+		if (*a.y == 0) {
+			prim = procura_proximo_ativo();
+			if (prim == NULL)
+				volta_dos();
+			p_est->p_destino = prim->contexto;
+		}
 		enable();
 	}
 }
