@@ -16,9 +16,10 @@ typedef union k {
 /* Estrutura do Descritor de Processo (BCP) */
 typedef struct desc_p {
 	char nome[35];
-	enum { ativo, terminado} estado;
+	enum {ativo, bloq_P, terminado} estado;
 	PTR_DESC contexto;
 	struct desc_p *prox_desc;
+	struct desc_p *fila_sem;
 } DESCRITOR_PROC;
 
 /* ponteiro do tipo DESCRITOR_PROC */
