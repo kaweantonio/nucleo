@@ -32,6 +32,70 @@ PTR_DESC_PROC p_salva;
 
 PTR_DESC d_esc; /* ponteiro para o descritor da co-rotina do escalador */
 
+/* Estrutura para semáforos*/
+typedef struct {
+	int s;
+	PTR_DESC_PROC Q;
+} semaforo;
+
+void far inicia_semaforo(semaforo *sem, int n){
+	sem->s = n;
+	sem->Q = NULL;
+}
+
+void far insere_fila_bloqueados(PTR_DESC_PROC Q){	
+	PTR_DESC_PROC p_aux;
+
+	if (!Q){
+		Q = prim;
+		Q->fila_sem = NULL;
+		return;
+	}
+	p_aux = Q;
+
+	while (p_aux->fila_sem != NULL){
+		p_aux = p_aux->fila_sem;
+	}
+
+	p_aux->fila_sem = prim;
+	prim->fila_sem = NULL;
+}
+
+void far remove_fila_bloqueados(PTR_DESC_PROC Q){
+	PTR_DESC_PROC p_aux;
+	Q->estado = ativo;
+	p_aux = Q->fila_sem;
+	Q = Q->fila_sem;
+	p_aux->fila_sem = NULL;
+}
+
+void far P(semaforo *sem){
+	PTR_DESC_PROC p_aux;
+	disable();
+	if (sem->s > 0){
+		sem->s--;
+		enable();
+	} else {
+		prim->estado = bloq_P;
+		p_aux = prim;
+		insere_fila_bloqueados(sem->Q);
+		prim = procura_proximo_ativo();
+		if (prim == NULL)
+			volta_dos();
+		transfer(p_aux->contexto, prim->contexto);
+	}
+}
+
+void far V(semaforo *sem){
+	disable();
+	if (sem->Q){
+		remove_fila_bloqueados(sem->Q);
+	} else {
+		sem->s++;
+	}
+	enable();
+}
+
 void far insere_fila_prontos(PTR_DESC_PROC p){	
 	PTR_DESC_PROC q;
 	if (!prim){
