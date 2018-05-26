@@ -45,15 +45,15 @@ void far inicia_semaforo(semaforo *sem, unsigned int n){
 	sem->Q = NULL;
 }
 
-void far insere_fila_bloqueados(PTR_DESC_PROC Q){	
+void far insere_fila_bloqueados(semaforo *sem){	
 	PTR_DESC_PROC p_aux;
 
-	if (!Q){
-		Q = prim;
-		Q->fila_sem = NULL;
+	if (!sem->Q){
+		sem->Q = prim;
+		sem->Q->fila_sem = NULL;
 		return;
 	}
-	p_aux = Q;
+	p_aux = sem->Q;
 
 	while (p_aux->fila_sem != NULL){
 		p_aux = p_aux->fila_sem;
@@ -63,11 +63,11 @@ void far insere_fila_bloqueados(PTR_DESC_PROC Q){
 	prim->fila_sem = NULL;
 }
 
-void far remove_fila_bloqueados(PTR_DESC_PROC Q){
+void far remove_fila_bloqueados(semaforo *sem){
 	PTR_DESC_PROC p_aux;
-	Q->estado = ativo;
-	p_aux = Q;
-	Q = Q->fila_sem;
+	sem->Q->estado = ativo;
+	p_aux = sem->Q;
+	sem->Q = sem->Q->fila_sem;
 	p_aux->fila_sem = NULL;
 }
 
@@ -129,7 +129,7 @@ void far P(semaforo *sem){
 	} else {
 		prim->estado = bloq_P;
 		p_aux = prim;
-		insere_fila_bloqueados(sem->Q);
+		insere_fila_bloqueados(sem);
 		prim = procura_proximo_ativo();
 		if (prim == NULL)
 			volta_dos();
@@ -139,9 +139,10 @@ void far P(semaforo *sem){
 
 void far V(semaforo *sem){
 	fprintf(p_v_printer, "%s chamou V. sem->s: %d\n", prim->nome, sem->s);
+	imprime_fila_sem(sem->Q);
 	disable();
 	if (sem->Q){
-		remove_fila_bloqueados(sem->Q);
+		remove_fila_bloqueados(sem);
 	} else {
 		(sem->s)++;
 	}
