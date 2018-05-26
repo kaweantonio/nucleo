@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+FILE *p_v_printer;
+
 /* Estrutura para Registros do endereço do flag INDOS retornado pela função 0x34 */
 typedef struct registros {
 	unsigned bx1, es1;
@@ -34,11 +36,11 @@ PTR_DESC d_esc; /* ponteiro para o descritor da co-rotina do escalador */
 
 /* Estrutura para semáforos*/
 typedef struct {
-	int s;
+	unsigned int s;
 	PTR_DESC_PROC Q;
 } semaforo;
 
-void far inicia_semaforo(semaforo *sem, int n){
+void far inicia_semaforo(semaforo *sem, unsigned int n){
 	sem->s = n;
 	sem->Q = NULL;
 }
@@ -64,7 +66,7 @@ void far insere_fila_bloqueados(PTR_DESC_PROC Q){
 void far remove_fila_bloqueados(PTR_DESC_PROC Q){
 	PTR_DESC_PROC p_aux;
 	Q->estado = ativo;
-	p_aux = Q->fila_sem;
+	p_aux = Q;
 	Q = Q->fila_sem;
 	p_aux->fila_sem = NULL;
 }
@@ -86,14 +88,25 @@ PTR_DESC_PROC far procura_proximo_ativo(){
 	return p_aux;
 }
 
+char * estado_processo(PTR_DESC_PROC p) {
+	switch(p->estado) {
+		case ativo:
+			return "ativo";
+		case bloq_P:
+			return "bloq_P";
+		case terminado:
+			return "terminado";
+		default:
+			return "erro";
+	}
+}
+
 void far imprime_fila_processos(){
 	PTR_DESC_PROC p_aux;
 	p_aux = p_salva->prox_desc;
 	do {
 		printf("Nome: %s\t Estado: ", p_aux->nome);
-		if (p_aux->estado == terminado)
-			printf("terminado\n");
-		else printf("ativo\n");
+		printf("%s\n", estado_processo(p_aux));
 		p_aux = p_aux->prox_desc;
 	} while (p_aux != p_salva->prox_desc);
 }
@@ -108,8 +121,8 @@ void far volta_dos(){
 
 void far P(semaforo *sem){
 	PTR_DESC_PROC p_aux;
+	fprintf(p_v_printer, "%s chamou P. sem->s: %d\n", prim->nome, sem->s);
 	disable();
-
 	if (sem->s > 0){
 		(sem->s)--;
 		enable();
@@ -125,6 +138,7 @@ void far P(semaforo *sem){
 }
 
 void far V(semaforo *sem){
+	fprintf(p_v_printer, "%s chamou V. sem->s: %d\n", prim->nome, sem->s);
 	disable();
 	if (sem->Q){
 		remove_fila_bloqueados(sem->Q);
@@ -205,6 +219,7 @@ void far escalador(){
 
 void far dispara_sistema(){
 	PTR_DESC desc_dispara;
+	p_v_printer = fopen("P_V_relatorio.txt", "w");
 	d_esc = cria_desc();
 	desc_dispara = cria_desc();
 	newprocess(escalador, d_esc);

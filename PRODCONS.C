@@ -10,14 +10,16 @@ FILE *arq;
 void far produtor() {
 	int i;
 	for(i = 0; i < 1000; i++) {
+	/* 	disable();
 		imprime_fila_processos();
+		enable(); */
 		P(&vazia);
 		P(&mutex);
 		buffer[prox_elem] = prox_elem;
 		prox_elem = (prox_elem + 1) % MAX;
 		V(&mutex);
 		V(&cheia);
-		fprintf(arq, "Produtor colocou %d\n", prox_elem - 1 < 0 ? MAX : prox_elem-1);
+		fprintf(arq, "Produtor colocou %d\n", prox_elem - 1 < 0 ? MAX - 1 : prox_elem-1);
 	}
 	termina_processo();
 }
@@ -25,11 +27,13 @@ void far produtor() {
 void far consumidor() {
 	int i, lido;
 	for(i = 0; i < 1000; i++) {
+	/* 	disable();
 		imprime_fila_processos();
+		enable(); */
 		P(&cheia);
 		P(&mutex);
 		prox_elem--;
-		prox_elem = prox_elem < 0 ? MAX : prox_elem;
+		prox_elem = prox_elem < 0 ? MAX - 1 : prox_elem;
 		lido = buffer[prox_elem];
 		buffer[prox_elem] = 9999;
 		V(&mutex);
