@@ -69,11 +69,49 @@ void far remove_fila_bloqueados(PTR_DESC_PROC Q){
 	p_aux->fila_sem = NULL;
 }
 
+PTR_DESC_PROC far procura_proximo_ativo(){
+	PTR_DESC_PROC p_aux;
+
+	/* começa busca pelo próximo processo a partir do próximo descritor de processos apontador por prim */	
+	p_aux = prim->prox_desc;
+
+	while (p_aux->estado != ativo && p_aux->prox_desc != prim->prox_desc){
+		p_aux = p_aux->prox_desc;
+	}
+
+	if (p_aux->prox_desc == prim->prox_desc && prim->estado == terminado){
+		p_salva = prim;
+		return NULL;
+	}
+	return p_aux;
+}
+
+void far imprime_fila_processos(){
+	PTR_DESC_PROC p_aux;
+	p_aux = p_salva->prox_desc;
+	do {
+		printf("Nome: %s\t Estado: ", p_aux->nome);
+		if (p_aux->estado == terminado)
+			printf("terminado\n");
+		else printf("ativo\n");
+		p_aux = p_aux->prox_desc;
+	} while (p_aux != p_salva->prox_desc);
+}
+
+void far volta_dos(){
+	disable();
+	setvect(8, p_est->int_anterior);
+	enable();
+	imprime_fila_processos();
+	exit(0);
+}
+
 void far P(semaforo *sem){
 	PTR_DESC_PROC p_aux;
 	disable();
+
 	if (sem->s > 0){
-		sem->s--;
+		(sem->s)--;
 		enable();
 	} else {
 		prim->estado = bloq_P;
@@ -91,7 +129,7 @@ void far V(semaforo *sem){
 	if (sem->Q){
 		remove_fila_bloqueados(sem->Q);
 	} else {
-		sem->s++;
+		(sem->s)++;
 	}
 	enable();
 }
@@ -114,35 +152,6 @@ void far insere_fila_prontos(PTR_DESC_PROC p){
 	p->prox_desc = prim;
 }
 
-void far imprime_fila_processos(){
-	PTR_DESC_PROC p_aux;
-	p_aux = p_salva->prox_desc;
-	do {
-		printf("Nome: %s\t Estado: ", p_aux->nome);
-		if (p_aux->estado == terminado)
-			printf("terminado\n");
-		else printf("ativo\n");
-		p_aux = p_aux->prox_desc;
-	} while (p_aux != p_salva->prox_desc);
-}
-
-PTR_DESC_PROC far procura_proximo_ativo(){
-	PTR_DESC_PROC p_aux;
-
-	/* começa busca pelo próximo processo a partir do próximo descritor de processos apontador por prim */	
-	p_aux = prim->prox_desc;
-
-	while (p_aux->estado != ativo && p_aux->prox_desc != prim->prox_desc){
-		p_aux = p_aux->prox_desc;
-	}
-
-	if (p_aux->prox_desc == prim->prox_desc && prim->estado == terminado){
-		p_salva = prim;
-		return NULL;
-	}
-	return p_aux;
-}
-
 /* cria processo e adiciona na fila de processos prontos (por enquanto)
  |end_proc|  endereço de localização na memória do processo;
  |nome_proc| nome dado pelo usuário para identificação do processo */
@@ -161,14 +170,6 @@ void far cria_processo(void far(*end_proc)(), char nome_proc[35]){
 	newprocess(end_proc, p_aux->contexto);
 
 	insere_fila_prontos(p_aux);
-}
-
-void far volta_dos(){
-	disable();
-	setvect(8, p_est->int_anterior);
-	enable();
-	imprime_fila_processos();
-	exit(0);
 }
 
 void far escalador(){

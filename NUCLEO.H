@@ -11,7 +11,19 @@ typedef struct desc_p {
 } DESCRITOR_PROC;
 
 /* ponteiro do tipo DESCRITOR_PROC */
-typedef DESCRITOR_PROC *PTR_DESC_PROC; 
+typedef DESCRITOR_PROC *PTR_DESC_PROC;
+
+/* Estrutura para semáforos*/
+typedef struct {
+	int s;
+	PTR_DESC_PROC Q;
+} semaforo;
+
+extern void far inicia_semaforo(semaforo *sem, int n);
+
+extern void far P(semaforo *sem);
+
+extern void far V(semaforo *sem); 
 
 extern void far insere_fila_prontos(PTR_DESC_PROC p);
 
