@@ -111,6 +111,15 @@ void far imprime_fila_processos(){
 	} while (p_aux != p_salva->prox_desc);
 }
 
+void far imprime_fila_sem(PTR_DESC_PROC Q){
+	PTR_DESC_PROC p = Q;
+	while (p != NULL) {
+		fprintf(p_v_printer, "Nome: %s\t Estado: ", p->nome);
+		fprintf(p_v_printer, "%s\n", estado_processo(p));
+		p = p->fila_sem;
+	}
+}
+
 void far volta_dos(){
 	disable();
 	setvect(8, p_est->int_anterior);
@@ -122,6 +131,7 @@ void far volta_dos(){
 void far P(semaforo *sem){
 	PTR_DESC_PROC p_aux;
 	fprintf(p_v_printer, "%s chamou P. sem->s: %d\n", prim->nome, sem->s);
+	imprime_fila_sem(sem->Q);
 	disable();
 	if (sem->s > 0){
 		(sem->s)--;
