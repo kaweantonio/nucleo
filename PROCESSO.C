@@ -6,7 +6,7 @@ PTR_DESC_PROC p1, p2;
 void far processo1(){
 	int i = 0;
 	while(i < 10000){
-		printf("Processo 1 ");
+		printf("Processo 1 \t");
 		i++;
 	}
 	termina_processo();
@@ -15,7 +15,7 @@ void far processo1(){
 void far processo2(){
 	int i = 0;
 	while(i < 10000){
-		printf("Processo 2 ");
+		printf("Processo 2 \t");
 		i++;
 	}
 	termina_processo();
@@ -24,7 +24,7 @@ void far processo2(){
 void far processo3(){
 	int i = 0;
 	while(i < 10000){
-		printf("Processo 3 ");
+		printf("Processo 3 \t");
 		i++;
 	}
 	termina_processo();
