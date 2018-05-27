@@ -6,7 +6,7 @@ FILE *p_v_printer;
 
 /* Estrutura para Registros do endereço do flag INDOS retornado pela função 0x34 */
 typedef struct registros {
-	unsigned bx1, es1;
+	unsigned int bx1, es1;
 } regis;
 
 /* Union da estrutura Regis para uma variável de 2 bytes (char) */
@@ -130,8 +130,10 @@ void far volta_dos(){
 
 void far P(semaforo *sem){
 	PTR_DESC_PROC p_aux;
-	fprintf(p_v_printer, "%s chamou P. sem->s: %d\n", prim->nome, sem->s);
-	imprime_fila_sem(sem->Q);
+	if (!*a.y){
+		fprintf(p_v_printer, "%s chamou P. sem->s: %d\n", prim->nome, sem->s);
+		imprime_fila_sem(sem->Q);
+	}
 	disable();
 	if (sem->s > 0){
 		(sem->s)--;
@@ -148,8 +150,10 @@ void far P(semaforo *sem){
 }
 
 void far V(semaforo *sem){
-	fprintf(p_v_printer, "%s chamou V. sem->s: %d\n", prim->nome, sem->s);
-	imprime_fila_sem(sem->Q);
+	if (!*a.y){
+		fprintf(p_v_printer, "%s chamou V. sem->s: %d\n", prim->nome, sem->s);
+		imprime_fila_sem(sem->Q);
+	}
 	disable();
 	if (sem->Q){
 		remove_fila_bloqueados(sem);

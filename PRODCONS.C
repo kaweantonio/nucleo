@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <nucleo.h>
 
-#define MAX 200
+#define MAX 10
 
 int buffer[MAX], prox_elem = 0;
 semaforo cheia, vazia, mutex;
@@ -9,7 +9,7 @@ FILE *arq;
 
 void far produtor() {
 	int i;
-	for(i = 0; i < 1000; i++) {
+	for(i = 0; i < 25; i++) {
 	/* 	disable();
 		imprime_fila_processos();
 		enable(); */
@@ -26,14 +26,13 @@ void far produtor() {
 
 void far consumidor() {
 	int i, lido;
-	for(i = 0; i < 1000; i++) {
+	for(i = 0; i < 25; i++) {
 	/* 	disable();
 		imprime_fila_processos();
 		enable(); */
 		P(&cheia);
 		P(&mutex);
-		prox_elem--;
-		prox_elem = prox_elem < 0 ? MAX - 1 : prox_elem;
+		prox_elem = prox_elem == 0 ? MAX - 1 : prox_elem - 1;
 		lido = buffer[prox_elem];
 		buffer[prox_elem] = 9999;
 		V(&mutex);
@@ -51,4 +50,4 @@ void far main() {
 	cria_processo(produtor, "prod");
 	cria_processo(consumidor, "cons");
 	dispara_sistema();
-}
+}
