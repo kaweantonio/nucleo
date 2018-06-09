@@ -3,23 +3,20 @@
 
 #define MAX 10
 
-int buffer[MAX], prox_elem = 0;
+int buffer[MAX], prox_prod = 0, prox_cons = 0;
 semaforo cheia, vazia, mutex;
 FILE *arq;
 
 void far produtor() {
 	int i;
 	for(i = 0; i < 25; i++) {
-	/* 	disable();
-		imprime_fila_processos();
-		enable(); */
 		P(&vazia);
 		P(&mutex);
-		buffer[prox_elem] = prox_elem;
-		prox_elem = (prox_elem + 1) % MAX;
+		buffer[prox_prod] = i;
+		prox_prod = (prox_prod + 1) % MAX;
 		V(&mutex);
 		V(&cheia);
-		fprintf(arq, "Produtor colocou %d\n", prox_elem - 1 < 0 ? MAX - 1 : prox_elem-1);
+		fprintf(arq, "Produtor colocou %d\n", i);
 	}
 	termina_processo();
 }
@@ -27,14 +24,10 @@ void far produtor() {
 void far consumidor() {
 	int i, lido;
 	for(i = 0; i < 25; i++) {
-	/* 	disable();
-		imprime_fila_processos();
-		enable(); */
 		P(&cheia);
 		P(&mutex);
-		prox_elem = prox_elem == 0 ? MAX - 1 : prox_elem - 1;
-		lido = buffer[prox_elem];
-		buffer[prox_elem] = 9999;
+		lido = buffer[prox_cons];
+		prox_cons = (prox_cons + 1) % MAX;
 		V(&mutex);
 		V(&vazia);
 		fprintf(arq, "Consumidor retirou %d\n", lido);

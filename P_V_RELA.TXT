@@ -47,15 +47,6 @@ Nome: prod	 Estado: bloq_P
 cons chamou P. sem->s: 9
 cons chamou P. sem->s: 1
 cons chamou V. sem->s: 0
-prod chamou P. sem->s: 1
-prod chamou V. sem->s: 0
-prod chamou V. sem->s: 8
-prod chamou P. sem->s: 0
-cons chamou V. sem->s: 0
-Nome: prod	 Estado: bloq_P
-cons chamou P. sem->s: 9
-cons chamou P. sem->s: 1
-cons chamou V. sem->s: 0
 cons chamou V. sem->s: 0
 cons chamou P. sem->s: 8
 cons chamou P. sem->s: 1
@@ -71,7 +62,97 @@ cons chamou V. sem->s: 0
 cons chamou V. sem->s: 3
 cons chamou P. sem->s: 5
 cons chamou P. sem->s: 1
+coprod chamou P. sem->s: 0
+ns chamou V. sem->s: 0
+Nome: prod	 Estado: bloq_P
+cons chamou V. sem->s: 4
+cons chamou P. sem->s: 4
+cons chamou P. sem->s: 0
+prod chamou V. sem->s: 0
+Nome: cons	 Estado: bloq_P
+prod chamou V. sem->s: 3
+prod chamou P. sem->s: 5
+prod chamou P. sem->s: 0
 cons chamou V. sem->s: 0
+Nome: prod	 Estado: bloq_P
+cons chamou V. sem->s: 4
+cons chamou P. sem->s: 4
+cons chamou P. sem->s: 0
+prod chamou V. sem->s: 0
+Nome: cons	 Estado: bloq_P
+prod chamou V. sem->s: 3
+prod chamou P. sem->s: 5
+prod chamou P. sem->s: 0
+cons chamou V. sem->s: 0
+Nome: prod	 Estado: bloq_P
+cons chamou V. sem->s: 4
+cons chamou P. sem->s: 4
+cons chamou P. sem->s: 0
+prod chamou V. sem->s: 0
+Nome: cons	 Estado: bloq_P
+prod chamou V. sem->s: 3
+prod chamou P. sem->s: 5
+prod chamou P. sem->s: 0
+cons chamou V. sem->s: 0
+Nome: prod	 Estado: bloq_P
+cons chamou V. sem->s: 4
+cons chamou P. sem->s: 4
+cons chamou P. sem->s: 0
+prod chamou V. sem->s: 0
+Nome: cons	 Estado: bloq_P
+prod chamou V. sem->s: 3
+prod chamou P. sem->s: 5
+prod chamou P. sem->s: 0
+cons chamou V. sem->s: 0
+Nome: prod	 Estado: bloq_P
+cons chamou V. sem->s: 4
+cons chamou P. sem->s: 4
+cons chamou P. sem->s: 0
+prod chamou V. sem->s: 0
+Nome: cons	 Estado: bloq_P
+prod chamou V. sem->s: 3
+prod chamou P. sem->s: 5
+prod chamou P. sem->s: 0
+cons chamou V. sem->s: 0
+Nome: prod	 Estado: bloq_P
+cons chamou V. sem->s: 4
+cons chamou P. sem->s: 4
+cons chamou P. sem->s: 0
+prod chamou V. sem->s: 0
+Nome: cons	 Estado: bloq_P
+prod chamou V. sem->s: 3
+prod chamou P. sem->s: 5
+prod chamou P. sem->s: 0
+cons chamou V. sem->s: 0
+Nome: prod	 Estado: bloq_P
+cons chamou V. sem->s: 4
+cons chamou P. sem->s: 4
+cons chamou P. sem->s: 0
+prod chamou V. sem->s: 0
+Nome: cons	 Estado: bloq_P
+prod chamou V. sem->s: 3
+prod chamou P. sem->s: 5
+prod chamou P. sem->s: 0
+cons chamou V. sem->s: 0
+Nome: prod	 Estado: bloq_P
+cons chamou V. sem->s: 4
+cons chamou P. sem->s: 4
+cons chamou P. sem->s: 0
+prod chamou V. sem->s: 0
+Nome: cons	 Estado: bloq_P
+prod chamou V. sem->s: 3
+prod chamou P. sem->s: 5
+prod chamou P. sem->s: 0
+cons chamou V. sem->s: 0
+Nome: prod	 Estado: bloq_P
+cons chamou V. sem->s: 4
+cons chamou P. sem->s: 4
+cons chamou P. sem->s: 0
+prod chamou V. sem->s: 0
+Nome: cons	 Estado: bloq_P
+prod chamou V. sem->s: 3
+prod chamou P. sem->s: 5
+prod chamoucons chamou V. sem->s: 0
 cons chamou V. sem->s: 4
 cons chamou P. sem->s: 4
 cons chamou P. sem->s: 1
@@ -90,7 +171,7 @@ cons chamou P. sem->s: 1
 cons chamou V. sem->s: 0
 cons chamou V. sem->s: 8
 cons chamou P. sem->s: 0
-prod chamou P. sem->s: 1
+ P. sem->s: 0
 prod chamou V. sem->s: 0
 prod chamou V. sem->s: 0
 Nome: cons	 Estado: bloq_P
@@ -114,79 +195,6 @@ prod chamou P. sem->s: 5
 prod chamou P. sem->s: 1
 prod chamou V. sem->s: 0
 prod chamou V. sem->s: 4
-prod chamou P. sem->s: 4
-prod chamou P. sem->s: 1
-prod chamou V. sem->s: 0
-prod chamou V. sem->s: 5
-prod chamou P. sem->s: 3
-prod chamou P. sem->s: 1
-prod chamou V. sem->s: 0
-prod chamou V. sem->s: 6
-prod chamou P. sem->s: 2
-prod chamou P. sem->s: 1
-prod chamou V. sem->s: 0
-prod chamou V. sem->s: 7
-prod chamou P. sem->s: 1
-prod chamou P. sem->s: 1
-prod chamou V. sem->s: 0
-prod chamou V. sem->s: 8
-prod chamou P. sem->s: 0
-cons chamou P. sem->s: 1
-cons chamou V. sem->s: 0
-cons chamou V. sem->s: 0
-Nome: prod	 Estado: bloq_P
-cons chamou P. sem->s: 9
-cons chamou P. sem->s: 1
-prod chamou P. sem->s: 0
-cons chamou V. sem->s: 0
-Nome: prod	 Estado: bloq_P
-cons chamou V. sem->s: 0
-cons chamou P. sem->s: 8
-cons chamou P. sem->s: 0
-prod chamou V. sem->s: 0
-Nome: cons	 Estado: bloq_P
-prod chamou V. sem->s: 7
-prod chamou P. sem->s: 1
-prod chamou P. sem->s: 0
-cons chamou V. sem->s: 0
-Nome: prod	 Estado: bloq_P
-cons chamou V. sem->s: 0
-cons chamou P. sem->s: 8
-cons chamou P. sem->s: 0
-prod chamou V. sem->s: 0
-Nome: cons	 Estado: bloq_P
-prod chamou V. sem->s: 7
-prod chamou P. sem->s: 1
-prod chamou P. sem->s: 0
-cons chamou V. sem->s: 0
-Nome: prod	 Estado: bloq_P
-cons chamou V. sem->s: 0
-cons chamou P. sem->s: 8
-cons chamou P. sem->s: 0
-prod chamou V. sem->s: 0
-Nome: cons	 Estado: bloq_P
-prod chamou V. sem->s: 7
-prod chamou P. sem->s: 1
-prod chamou P. sem->s: 0
-cons chamou V. sem->s: 0
-Nome: prod	 Estado: bloq_P
-cons chamou V. sem->s: 0
-cons chamou P. sem->s: 8
-cons chamou P. sem->s: 0
-prod chamou V. sem->s: 0
-Nome: cons	 Estado: bloq_P
-prod chamou V. sem->s: 7
-cons chamou V. sem->s: 0
-cons chamou V. sem->s: 1
-cons chamou P. sem->s: 8
-cons chamou P. sem->s: 1
-cons chamou V. sem->s: 0
-cons chamou V. sem->s: 2
-cons chamou P. sem->s: 7
-cons chamou P. sem->s: 1
-cons chamou V. sem->s: 0
-cons chamou V. sem->s: 3
-cons chamou P. sem->s: 6
 cons chamou P. sem->s: 1
 cons chamou V. sem->s: 0
 cons chamou V. sem->s: 4
