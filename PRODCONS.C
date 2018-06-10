@@ -1,46 +1,68 @@
 #include <stdio.h>
 #include <nucleo.h>
 
-#define MAX 10
-
-int buffer[MAX], prox_prod = 0, prox_cons = 0;
+unsigned char far (*produz)();
+void far (*consome)(unsigned char lido); 
+void far (*retorno)();
+int prox_prod = 0, prox_cons = 0;
+long unsigned int max, n;
 semaforo cheia, vazia, mutex;
-FILE *arq;
+unsigned char *buffer;
 
 void far produtor() {
-	int i;
-	for(i = 0; i < 25; i++) {
+	long unsigned int i;
+	for(i = 0; i < n; i++) {
 		P(&vazia);
 		P(&mutex);
-		buffer[prox_prod] = i;
-		prox_prod = (prox_prod + 1) % MAX;
+		buffer[prox_prod] = produz();
+		prox_prod = (prox_prod + 1) % max;
 		V(&mutex);
 		V(&cheia);
-		fprintf(arq, "Produtor colocou %d\n", i);
 	}
 	termina_processo();
 }
 
 void far consumidor() {
-	int i, lido;
-	for(i = 0; i < 25; i++) {
+	long unsigned int i;
+	for(i = 0; i < n; i++) {
 		P(&cheia);
 		P(&mutex);
-		lido = buffer[prox_cons];
-		prox_cons = (prox_cons + 1) % MAX;
+		consome(buffer[prox_cons]);
+		prox_cons = (prox_cons + 1) % max;
 		V(&mutex);
 		V(&vazia);
-		fprintf(arq, "Consumidor retirou %d\n", lido);
 	}
+	free(buffer);
+	retorno();
 	termina_processo();
 }
 
-void far main() {
-	arq = fopen("outputProdCons.txt", "w");
+void iniciar_PRODCONS(long unsigned int max_buffer, 
+					  long unsigned int num_it, 
+					  unsigned char far (*func_produz)(), 
+					  void far (*func_consome)(unsigned char lido),
+					  void far (*func_retorno)()) {
+	max = max_buffer;
+	n = num_it;
+	buffer = (unsigned char *) calloc (max_buffer, 1);
+	produz = func_produz;
+	consome = func_consome;
+	retorno = func_retorno;
 	inicia_semaforo(&cheia, 0);
-	inicia_semaforo(&vazia, MAX);
+	inicia_semaforo(&vazia, max_buffer);
 	inicia_semaforo(&mutex, 1);
 	cria_processo(produtor, "prod");
 	cria_processo(consumidor, "cons");
 	dispara_sistema();
 }
+
+/* void far main() {
+	config_PRODCONS(10, 25, produz_teste, consome_teste);
+	arq = fopen("outputProdCons.txt", "w");
+	inicia_semaforo(&cheia, 0);
+	inicia_semaforo(&vazia, max_buffer);
+	inicia_semaforo(&mutex, 1);
+	cria_processo(produtor, "prod");
+	cria_processo(consumidor, "cons");
+	dispara_sistema();
+} */
