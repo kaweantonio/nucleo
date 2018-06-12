@@ -17,7 +17,7 @@ long unsigned int max, n;
 /*  Declaração dos semáforos.
 	cheia = células cheias do buffer. Deve ser iniciado em 0.
 	vazia = células vazias do buffer. Deve ser iniciado com max.
-	mutex = exclusão mútua do buffer. Deve ser iniciado em 1.
+	mutex = exclusão mútua do buffer. Deve ser iniciado em 1. */
 semaforo cheia, vazia, mutex;
 
 /* Buffer compartilhado */
