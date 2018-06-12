@@ -81,7 +81,7 @@ PTR_DESC_PROC far procura_proximo_ativo(){
 		p_aux = p_aux->prox_desc;
 	}
 
-	if (p_aux->prox_desc == prim->prox_desc && prim->estado == terminado){
+	if (p_aux->prox_desc == prim->prox_desc && prim->estado != ativo){
 		p_salva = prim;
 		return NULL;
 	}
