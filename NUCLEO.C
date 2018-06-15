@@ -18,7 +18,7 @@ typedef union k {
 /* Estrutura para Fila de Mensagens */
 typedef struct {
 	enum {vazia, nova} flag;
-	char nome_emisso[35];
+	char nome_emissor[35];
 	char msg[35];
 } mensagem;
 
