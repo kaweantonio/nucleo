@@ -194,7 +194,7 @@ void far insere_fila_prontos(PTR_DESC_PROC p){
 /* cria processo e adiciona na fila de processos prontos (por enquanto)
  |end_proc|  endereço de localização na memória do processo;
  |nome_proc| nome dado pelo usuário para identificação do processo */
-void far cria_processo(void far(*end_proc)(), char nome_proc[35]){
+void far cria_processo(void far(*end_proc)(), char nome_proc[35], int tamanho){
 	PTR_DESC_PROC p_aux;
 	p_aux = (DESCRITOR_PROC*) malloc(sizeof (DESCRITOR_PROC));;
 	if (p_aux == NULL){
