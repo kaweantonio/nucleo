@@ -15,6 +15,13 @@ typedef union k {
 	char far *y;
 } APONTA_REG_CRIT;
 
+/* Estrutura para Fila de Mensagens */
+typedef struct {
+	enum {vazia, nova} flag;
+	char nome_emisso[35];
+	char msg[35];
+} mensagem;
+
 /* Estrutura do Descritor de Processo (BCP) */
 typedef struct desc_p {
 	char nome[35];
