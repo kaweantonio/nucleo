@@ -196,6 +196,7 @@ void far insere_fila_prontos(PTR_DESC_PROC p){
  |nome_proc| nome dado pelo usuário para identificação do processo */
 void far cria_processo(void far(*end_proc)(), char nome_proc[35], int tamanho){
 	PTR_DESC_PROC p_aux;
+	int i;
 	p_aux = (DESCRITOR_PROC*) malloc(sizeof (DESCRITOR_PROC));;
 	if (p_aux == NULL){
 		printf("\nMemória insuficiente para alocação de descritor\n");
@@ -207,6 +208,24 @@ void far cria_processo(void far(*end_proc)(), char nome_proc[35], int tamanho){
 	p_aux->estado = ativo;
 	p_aux->contexto = cria_desc();
 	newprocess(end_proc, p_aux->contexto);
+
+	if (tamanho < 1){
+		tamanho = 1;
+	} else if (tamanho > 10) {
+		tamanho = 10;
+	}
+
+	if ((p_aux->vet_msg = (mensagem*) malloc (tamanho * sizeof(struct mensagem))) == NULL){
+		printf("\nMemória insuficiente para alocação de fila de mensagens\n");
+		exit(1);
+	}
+
+	for (i = 0; i < tamanho; i++) {
+		p_aux->vet_msg[i]->flag = vazia;
+	}
+
+	p_aux->tam_msg = tamanho;
+	p_aux->qtde_msg_recebidas = 0;
 
 	insere_fila_prontos(p_aux);
 }
@@ -269,4 +288,33 @@ void far termina_processo(){
 	prim->estado = terminado;
 	enable();
 	while(1);
+}
+
+PTR_DESC_PROC far procura_processo_fila_descritores(char *nome_proc){
+	PTR_DESC_PROC p_aux = prim->prox_desc;
+
+	while (p_aux->prox_desc != prim) {
+		if (strcmp(p_aux->nome, nome_proc) == 0 && p_aux->estado != terminado){
+			return p_aux;
+		}
+		p_aux = p_aux->prox_desc;
+	}
+
+	return NULL;
+}
+
+int far envia(char* msg, char* receptor){
+	disable();
+	PTR_DESC_PROC p_aux, p_aux2;
+
+	p_aux = procura_processo_fila_descritores(receptor);
+	if (p_aux == NULL){
+		enable();
+		return 0; /* fracasso - não encontrou processo receptor ou o estado do mesmo está diferente de terminado */
+	} 
+
+	if (p_aux->qtde_msg_recebidas == p_aux->tam_msg){
+		enable();
+		return 1; /* fracasso - fila de mensagens cheia */
+	}
 }
