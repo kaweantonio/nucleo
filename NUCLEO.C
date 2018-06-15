@@ -25,10 +25,13 @@ typedef struct {
 /* Estrutura do Descritor de Processo (BCP) */
 typedef struct desc_p {
 	char nome[35];
-	enum {ativo, bloq_P, terminado} estado;
+	enum {ativo, bloq_P, bloq_Env, bloq_Rec, terminado} estado;
 	PTR_DESC contexto;
 	struct desc_p *prox_desc;
 	struct desc_p *fila_sem;
+	mensagem* vet_msg;
+	int tam_msg;
+	int qtde_msg_recebidas;
 } DESCRITOR_PROC;
 
 /* ponteiro do tipo DESCRITOR_PROC */
