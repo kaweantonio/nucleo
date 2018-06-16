@@ -207,13 +207,13 @@ void far cria_processo(void far(*end_proc)(), char nome_proc[35], int tamanho){
 		tamanho = 10;
 	}
 
-	if ((p_aux->vet_msg = (mensagem*) malloc (tamanho * sizeof(struct mensagem))) == NULL){
+	if ((p_aux->vet_msg = (mensagem*) malloc (tamanho * sizeof(mensagem))) == NULL){
 		printf("\nMemória insuficiente para alocação de fila de mensagens\n");
 		exit(1);
 	}
 
 	for (i = 0; i < tamanho; i++) {
-		p_aux->vet_msg[i]->flag = vazia;
+		p_aux->vet_msg[i].flag = vazia;
 	}
 
 	p_aux->tam_msg = tamanho;
