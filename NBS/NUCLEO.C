@@ -1,39 +1,4 @@
-#include <system.h>
-#include <stdio.h>
-#include <string.h>
-
-/* Estrutura para Registros do endereço do flag INDOS retornado pela função 0x34 */
-typedef struct registros {
-	unsigned int bx1, es1;
-} regis;
-
-/* Union da estrutura Regis para uma variável de 2 bytes (char) */
-typedef union k {
-	regis x;
-	char far *y;
-} APONTA_REG_CRIT;
-
-/* Estrutura para Fila de Mensagens */
-typedef struct {
-	enum {vazia, nova} flag;
-	char nome_emissor[35];
-	char msg[35];
-} mensagem;
-
-/* Estrutura do Descritor de Processo (BCP) */
-typedef struct desc_p {
-	char nome[35];
-	enum {ativo, bloq_P, bloq_Env, bloq_Rec, terminado} estado;
-	PTR_DESC contexto;
-	struct desc_p *prox_desc;
-	struct desc_p *fila_sem;
-	mensagem* vet_msg;
-	int tam_msg;
-	int qtde_msg_recebidas;
-} DESCRITOR_PROC;
-
-/* ponteiro do tipo DESCRITOR_PROC */
-typedef DESCRITOR_PROC *PTR_DESC_PROC; 
+#include "C:\NBS\nucleo.h"
 
 /* variáveis globais */
 APONTA_REG_CRIT a; /* cria variável a para acesso ao flag INDOS */
@@ -42,17 +7,10 @@ PTR_DESC_PROC p_salva;
 
 PTR_DESC d_esc; /* ponteiro para o descritor da co-rotina do escalador */
 
-/* Estrutura para semáforos*/
-typedef struct {
-	unsigned int s;
-	PTR_DESC_PROC Q;
-} semaforo;
-
 void far inicia_semaforo(semaforo *sem, unsigned int n){
 	sem->s = n;
 	sem->Q = NULL;
 }
-
 void far insere_fila_bloqueados(semaforo *sem){	
 	PTR_DESC_PROC p_aux;
 
@@ -102,10 +60,6 @@ char * estado_processo(PTR_DESC_PROC p) {
 			return "ativo";
 		case bloq_P:
 			return "bloq_P";
-		case bloq_Env:
-			return "bloq_Env";
-		case bloq_Rec:
-			return "bloq_Rec";
 		case terminado:
 			return "terminado";
 		default:
@@ -186,9 +140,8 @@ void far insere_fila_prontos(PTR_DESC_PROC p){
 /* cria processo e adiciona na fila de processos prontos (por enquanto)
  |end_proc|  endereço de localização na memória do processo;
  |nome_proc| nome dado pelo usuário para identificação do processo */
-void far cria_processo(void far(*end_proc)(), char nome_proc[35], int tamanho){
+void far cria_processo(void far(*end_proc)(), char nome_proc[35]){
 	PTR_DESC_PROC p_aux;
-	int i;
 	p_aux = (DESCRITOR_PROC*) malloc(sizeof (DESCRITOR_PROC));;
 	if (p_aux == NULL){
 		printf("\nMemória insuficiente para alocação de descritor\n");
@@ -200,24 +153,6 @@ void far cria_processo(void far(*end_proc)(), char nome_proc[35], int tamanho){
 	p_aux->estado = ativo;
 	p_aux->contexto = cria_desc();
 	newprocess(end_proc, p_aux->contexto);
-
-	if (tamanho < 1){
-		tamanho = 1;
-	} else if (tamanho > 10) {
-		tamanho = 10;
-	}
-
-	if ((p_aux->vet_msg = (mensagem*) malloc (tamanho * sizeof(mensagem))) == NULL){
-		printf("\nMemória insuficiente para alocação de fila de mensagens\n");
-		exit(1);
-	}
-
-	for (i = 0; i < tamanho; i++) {
-		p_aux->vet_msg[i].flag = vazia;
-	}
-
-	p_aux->tam_msg = tamanho;
-	p_aux->qtde_msg_recebidas = 0;
 
 	insere_fila_prontos(p_aux);
 }
@@ -280,90 +215,4 @@ void far termina_processo(){
 	enable();
 	while(1);
 }
-
-PTR_DESC_PROC far procura_processo_fila_descritores(char *nome_proc){
-	PTR_DESC_PROC p_aux = prim->prox_desc;
-
-	while (p_aux != prim) {
-		if (strcmp(p_aux->nome, nome_proc) == 0 && p_aux->estado != terminado){
-			return p_aux;
-		}
-		p_aux = p_aux->prox_desc;
-	}
-
-	return NULL;
-}
-
-int far envia(char* msg, char* receptor){
-	PTR_DESC_PROC p_rec, p_aux;
-	int i; 
-	disable();
-	p_rec = procura_processo_fila_descritores(receptor);
-	if (p_rec == NULL){
-		enable();
-		return 0; /* fracasso - não encontrou processo receptor ou o estado do mesmo está diferente de terminado */
-	} 
-
-	if (p_rec->qtde_msg_recebidas == p_rec->tam_msg){
-		enable();
-		return 1; /* fracasso - fila de mensagens cheia */
-	}
-
-	/* envia mensagem */
-	i = 0;
-	while (p_rec->vet_msg[i].flag == nova){
-		i++;
-	}
-
-	p_rec->vet_msg[i].flag = nova;
-	strcpy(p_rec->vet_msg[i].nome_emissor, prim->nome);
-	strcpy(p_rec->vet_msg[i].msg, msg);
-	
-	p_rec->qtde_msg_recebidas++;
-
-	if (p_rec->estado == bloq_Rec){
-		p_rec->estado = ativo;
-	}
-
-	prim->estado = bloq_Env;
-	p_aux = prim;
-
-	prim = procura_proximo_ativo();
-
-	if (prim == NULL)
-		volta_dos();
-
-	transfer(p_aux->contexto, prim->contexto);
-	return 2; /* sucesso - mensagem foi enviada */
-}
-
-/* Recebe Não Seletivo */
-void far recebe(char* msg, char* emissor){
-	PTR_DESC_PROC p_aux;
-	int i;
-	disable();
-	if (prim->qtde_msg_recebidas == 0) {
-		prim->estado = bloq_Rec;
-		p_aux = prim;
-		prim = procura_proximo_ativo();
-		if (prim == NULL)
-			volta_dos();
-		transfer(p_aux->contexto, prim->contexto);
-		disable();
-	}
-
-	/* lê mensagem */
-	i = 0;
-	while (prim->vet_msg[i].flag == vazia) {
-		i++;
-	}
-
-	prim->vet_msg[i].flag = vazia;
-	strcpy(emissor, prim->vet_msg[i].nome_emissor);
-	strcpy(msg, prim->vet_msg[i].msg);
-
-	prim->qtde_msg_recebidas--;
-	p_aux = procura_processo_fila_descritores(emissor);	
-	p_aux->estado = ativo;
-	enable();
-}
+

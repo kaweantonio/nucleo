@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <nucleo.h>
+#include "C:\NB\nucleo.h"
 
 PTR_DESC_PROC p1, p2;
 

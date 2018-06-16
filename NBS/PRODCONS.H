@@ -1,4 +1,4 @@
-/* PRODCONS.H */
+#include "C:\NBS\nucleo.h"
 
 void iniciar_PRODCONS(long unsigned int max, 
 					  long unsigned int num_it, 

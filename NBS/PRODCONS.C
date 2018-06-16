@@ -1,5 +1,4 @@
-#include <stdio.h>
-#include <nucleo.h>
+#include "C:\NBS\prodcons.h"
 
 /* 	Declaração das funções que serão chamadas dentro do produtor/consumidor
 	e que terão valor atribuído através do parâmetro passado ao void iniciar_PRODCONS */

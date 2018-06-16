@@ -1,5 +1,0 @@
-ex_prcns.c (prodcons.h prodcons.obj nucleo.h nucleo.obj system.h system.obj)
-
-prodcons.obj
-nucleo.obj
-system.obj

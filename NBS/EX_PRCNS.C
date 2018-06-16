@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <prodcons.h>
+#include "C:\NBS\prodcons.h"
 
 FILE *input, *output, *log;
 /* Long unsigned porque tamanho do arquivo pode ser muito grande, aí não caberia no int. */
@@ -61,9 +59,9 @@ void far salva_dados() {
 }
 
 void far main() {
-	log = fopen("LOGPRCN.txt", "w"); /* modo de acesso: escrita */
-	input = fopen("IMGIN.jpg", "rb"); /* modo de acesso: leitura de arquivo binário */
-	output = fopen("IMGOUT.jpg", "wb"); /* modo de acesso: escrita de arquivo binário */
+	log = fopen("C:\\NBS\\LOGPRCN.txt", "w"); /* modo de acesso: escrita */
+	input = fopen("C:\\NBS\\IMGIN.jpg", "rb"); /* modo de acesso: leitura de arquivo binário */
+	output = fopen("C:\\NBS\\IMGOUT.jpg", "wb"); /* modo de acesso: escrita de arquivo binário */
 	configurar();
 	iniciar_PRODCONS(max_buffer, size, servidor, cliente, salva_dados);
 }
