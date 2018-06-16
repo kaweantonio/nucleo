@@ -1,6 +1,6 @@
-#include "C:\NBPS\nucleo.h"
+#include "C:\NBPR\nucleo.h"
 
-#define MAX_PRIORIDADE 10
+#define MAX_NIVEL_PRIORIDADE 4
 
 /* variáveis globais */
 APONTA_REG_CRIT a; /* cria variável a para acesso ao flag INDOS */
@@ -9,26 +9,87 @@ PTR_DESC_PROC p_salva; /* salvar último PRIM caso dê algum erro. */
 
 PTR_DESC d_esc; /* ponteiro para o descritor da co-rotina do escalador */
 
+FILA_PRIORIDADE *lista_filas_prioridade = NULL;
+FILA_PRIORIDADE fila_atual;
 
-PTR_DESC_PROC far procura_proximo_ativo(){
+int nivel_atual = MAX_NIVEL_PRIORIDADE;
+
+void far iniciar_filas_processos() {
+	int i;
+	lista_filas_prioridade = (FILA_PRIORIDADE*) malloc (MAX_NIVEL_PRIORIDADE * sizeof(FILA_PRIORIDADE));
+	
+	/* Verificar se foi possível alocar. */
+	if(lista_filas_prioridade == NULL) {
+		printf("\nNão foi possível alocar fila de prioridades. Finalizar.\n");
+		exit(1);
+	}
+
+	/* Se tiver sido, inicializar ponteiros de controle das filas. */
+	for(i = 0; i < MAX_NIVEL_PRIORIDADE; i++) {
+		fila_atual = lista_filas_prioridade[i];
+		fila_atual->inicio = NULL;
+		fila_atual->fim = NULL;
+	}
+}
+
+PTR_DESC_PROC far prox_processo_nivel() {
 	PTR_DESC_PROC p_aux;
+	
+	p_aux = fila_atual->inicio;
 
-	/* Começa busca pelo próximo processo a partir do próximo descritor de processos apontador por prim */	
-	p_aux = prim->prox_desc;
-
-	/* Caminhar pela fila de processos buscando algum ativo ou voltar ao processo atual. */
-	while (p_aux->estado != ativo && p_aux->prox_desc != prim->prox_desc){
+	/* Caminhar pela fila de processos buscando algum ativo ou chegar ao final da fila. */
+	while (p_aux != NULL && p_aux->estado != ativo){
 		p_aux = p_aux->prox_desc;
 	}
 
-	/*  Voltou ao processo atual e o estado dele não é ativo. 
-		Erro no sistema. Salvar PRIM e avisar retornando NULL. */
-	if (p_aux->prox_desc == prim->prox_desc && prim->estado != ativo){
-		p_salva = prim;
-		return NULL;
+	return p_aux;
+}
+
+void far mudar_nivel_prioridade() {
+	int i, prox_nivel;
+	PTR_DESC_PROC p_aux;
+	FILA_PRIORIDADE prox_fila;
+
+	prox_nivel = (nivel_atual + 1) % MAX_NIVEL_PRIORIDADE;
+
+	/* Se desceu nível, adicionar processos do nível anterior à fila atual. */ 
+	if(prox_nivel > 0) {
+		prox_fila = lista_filas_prioridade[prox_nivel];
+		p_aux = prox_fila->fim;
+		p_aux->prox_desc = fila_atual->inicio;
+		nivel_atual = prox_nivel;
+		fila_atual = prox_fila;
 	}
 
-	/* Encontrou novo processo sem nenhum erro. */
+	/* Senão, subiu de nível. Retornar filas ao estado inicial. */
+	else {
+		for(i = 0; i < MAX_NIVEL_PRIORIDADE; i++) {
+			prox_fila = lista_filas_prioridade[i];
+			p_aux = prox_fila->fim;
+			p_aux->prox_desc = NULL;
+		}
+	}
+}
+
+
+PTR_DESC_PROC far procura_proximo_ativo(){
+	int i;
+	PTR_DESC_PROC p_aux = prox_processo_nivel();
+
+	/* Se for NULL, mudar de fila. */
+	if(p_aux == NULL) {
+		/*  Iterar pela fila de prioridades. Como a fila atual já foi verificada,
+			iniciar contador em 1. */
+		for(i = 1; i < MAX_NIVEL_PRIORIDADE; i++) { 
+			mudar_nivel_prioridade();
+			p_aux = prox_processo_nivel();
+
+			if(p_aux != NULL) {
+				break;
+			}
+		}
+	}
+
 	return p_aux;
 }
 
@@ -65,22 +126,31 @@ void far volta_dos(){
 	exit(0);
 }
 
-void far insere_fila_prontos(PTR_DESC_PROC p){	
+void far insere_fila_prontos(PTR_DESC_PROC p, int nivel){	
+	/* Adiciona processo ao final da fila */
+
+	int i;
 	PTR_DESC_PROC q;
-	if (!prim){
-		prim = p;
-		prim->prox_desc = prim;
-		return;
-	}
-	
-	q = prim;
 
-	while (q->prox_desc != prim){
-		q = q->prox_desc;
+	/* Na primeira execução, alocar filas. */
+	if(lista_filas_prioridade == NULL) {
+		iniciar_filas_processos();
 	}
 
-	q->prox_desc = p;
-	p->prox_desc = prim;
+	/* Atualizar início da fila. */
+	if(lista_filas_prioridade[nivel]->inicio == NULL) {
+		lista_filas_prioridade[nivel]->inicio = p;
+	}
+
+	/* Inserir processo no final da fila e atualizar ponteiros. */
+	if(lista_filas_prioridade[nivel]->fim == NULL) {
+		lista_filas_prioridade[nivel]->fim = p;
+	}
+	else {
+		q = lista_filas_prioridade[nivel]->fim;
+		q->prox_desc = p;
+		lista_filas_prioridade[nivel]->fim = p;
+	}
 }
 
 /* Cria processo e adiciona na fila de processos prontos.
@@ -102,7 +172,7 @@ void far cria_processo(void far(*end_proc)(), char nome_proc[35], unsigned int p
 	prioridade_corrigida = prioridade < 1 ? 1 : prioridade;
 
 	/* Se for maior que máximo, colocar máximo. */
-	prioridade_corrigida = prioridade_corrigida > MAX_PRIORIDADE ? MAX_PRIORIDADE : prioridade_corrigida;
+	prioridade_corrigida = prioridade_corrigida > MAX_NIVEL_PRIORIDADE ? MAX_NIVEL_PRIORIDADE : prioridade_corrigida;
 
 	/* inicialização dos campos do descritor */
 	strcpy(p_aux->nome, nome_proc);
@@ -110,9 +180,10 @@ void far cria_processo(void far(*end_proc)(), char nome_proc[35], unsigned int p
 	p_aux->prioridade = prioridade_corrigida;
 	p_aux->fatias_restantes = prioridade_corrigida;
 	p_aux->contexto = cria_desc();
+	p_aux->prox_desc = NULL;
 	newprocess(end_proc, p_aux->contexto);
 
-	insere_fila_prontos(p_aux);
+	insere_fila_prontos(p_aux, prioridade_corrigida);
 }
 
 void far informacoes_processo(char nome_processo[], unsigned int *prioridade) {
