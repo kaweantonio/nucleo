@@ -35,7 +35,7 @@ typedef struct desc_p {
 /* ponteiro do tipo DESCRITOR_PROC */
 typedef DESCRITOR_PROC *PTR_DESC_PROC; 
 
-/* vairáveis globais */
+/* variáveis globais */
 APONTA_REG_CRIT a; /* cria variável a para acesso ao flag INDOS */
 PTR_DESC_PROC prim = NULL; /* cabeça da fila dos processos prontos */
 PTR_DESC_PROC p_salva;
