@@ -102,6 +102,10 @@ char * estado_processo(PTR_DESC_PROC p) {
 			return "ativo";
 		case bloq_P:
 			return "bloq_P";
+		case bloq_Env:
+			return "bloq_Env";
+		case bloq_Rec:
+			return "bloq_Rec";
 		case terminado:
 			return "terminado";
 		default:
