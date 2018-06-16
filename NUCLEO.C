@@ -284,7 +284,7 @@ void far termina_processo(){
 PTR_DESC_PROC far procura_processo_fila_descritores(char *nome_proc){
 	PTR_DESC_PROC p_aux = prim->prox_desc;
 
-	while (p_aux->prox_desc != prim) {
+	while (p_aux != prim) {
 		if (strcmp(p_aux->nome, nome_proc) == 0 && p_aux->estado != terminado){
 			return p_aux;
 		}
