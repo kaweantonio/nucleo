@@ -295,17 +295,75 @@ PTR_DESC_PROC far procura_processo_fila_descritores(char *nome_proc){
 }
 
 int far envia(char* msg, char* receptor){
+	PTR_DESC_PROC p_rec, p_aux;
+	int i; 
 	disable();
-	PTR_DESC_PROC p_aux, p_aux2;
-
-	p_aux = procura_processo_fila_descritores(receptor);
-	if (p_aux == NULL){
+	p_rec = procura_processo_fila_descritores(receptor);
+	if (p_rec == NULL){
 		enable();
 		return 0; /* fracasso - não encontrou processo receptor ou o estado do mesmo está diferente de terminado */
 	} 
 
-	if (p_aux->qtde_msg_recebidas == p_aux->tam_msg){
+	if (p_rec->qtde_msg_recebidas == p_rec->tam_msg){
 		enable();
 		return 1; /* fracasso - fila de mensagens cheia */
 	}
+
+	/* envia mensagem */
+	i = 0;
+	while (p_rec->vet_msg[i].flag == nova){
+		i++;
+	}
+
+	p_rec->vet_msg[i].flag = nova;
+	strcpy(p_rec->vet_msg[i].nome_emissor, prim->nome);
+	strcpy(p_rec->vet_msg[i].msg, msg);
+	
+	p_rec->qtde_msg_recebidas++;
+
+	if (p_rec->estado == bloq_Rec){
+		p_rec->estado = ativo;
+	}
+
+	prim->estado = bloq_Env;
+	p_aux = prim;
+
+	prim = procura_proximo_ativo();
+
+	if (prim == NULL)
+		volta_dos();
+
+	transfer(p_aux->contexto, prim->contexto);
+	return 2; /* sucesso - mensagem foi enviada */
+}
+
+/* Recebe Não Seletivo */
+void far recebe(char* msg, char* emissor){
+	PTR_DESC_PROC p_aux;
+	int i;
+	disable();
+	if (prim->qtde_msg_recebidas == 0) {
+		prim->estado = bloq_Rec;
+		p_aux = prim;
+		prim = procura_proximo_ativo();
+		if (prim == NULL)
+			volta_dos();
+		transfer(p_aux->contexto, prim->contexto);
+		disable();
+	}
+
+	/* lê mensagem */
+	i = 0;
+	while (prim->vet_msg[i].flag == vazia) {
+		i++;
+	}
+
+	prim->vet_msg[i].flag = vazia;
+	strcpy(emissor, prim->vet_msg[i].nome_emissor);
+	strcpy(msg, prim->vet_msg[i].msg);
+
+	prim->qtde_msg_recebidas--;
+	p_aux = procura_processo_fila_descritores(emissor);	
+	p_aux->estado = ativo;
+	enable();
 }
