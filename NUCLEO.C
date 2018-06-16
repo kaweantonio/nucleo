@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-FILE *p_v_printer;
-
 /* Estrutura para Registros do endereço do flag INDOS retornado pela função 0x34 */
 typedef struct registros {
 	unsigned int bx1, es1;
@@ -124,8 +122,6 @@ void far imprime_fila_processos(){
 void far imprime_fila_sem(PTR_DESC_PROC Q){
 	PTR_DESC_PROC p = Q;
 	while (p != NULL) {
-		fprintf(p_v_printer, "Nome: %s\t Estado: ", p->nome);
-		fprintf(p_v_printer, "%s\n", estado_processo(p));
 		p = p->fila_sem;
 	}
 }
@@ -140,10 +136,6 @@ void far volta_dos(){
 
 void far P(semaforo *sem){
 	PTR_DESC_PROC p_aux;
-	if (!*a.y){
-		fprintf(p_v_printer, "%s chamou P. sem->s: %d\n", prim->nome, sem->s);
-		imprime_fila_sem(sem->Q);
-	}
 	disable();
 	if (sem->s > 0){
 		(sem->s)--;
@@ -160,10 +152,6 @@ void far P(semaforo *sem){
 }
 
 void far V(semaforo *sem){
-	if (!*a.y){
-		fprintf(p_v_printer, "%s chamou V. sem->s: %d\n", prim->nome, sem->s);
-		imprime_fila_sem(sem->Q);
-	}
 	disable();
 	if (sem->Q){
 		remove_fila_bloqueados(sem);
@@ -263,7 +251,6 @@ void far escalador(){
 
 void far dispara_sistema(){
 	PTR_DESC desc_dispara;
-	p_v_printer = fopen("P_V_relatorio.txt", "w");
 	d_esc = cria_desc();
 	desc_dispara = cria_desc();
 	newprocess(escalador, d_esc);
