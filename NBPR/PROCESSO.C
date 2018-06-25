@@ -30,14 +30,14 @@ void far processo(){
 	/* Registrar término da execução do processo. */
 	tempo_execucao = clock() - tempo_execucao;
 
-	printf("Processo %c, com prioridade %u, levou %d clocks para terminar.\n\n", numero_processo, prioridade, tempo_execucao);
+	printf("Processo %c, com prioridade %u, levou %d clocks para terminar.\n\n", numero_processo, prioridade + 1, tempo_execucao);
 	termina_processo();
 }
 
 main(){
-	cria_processo(processo,"1proc", 4);
-	cria_processo(processo,"2proc", 3);
-	cria_processo(processo,"3proc", 2);
-	cria_processo(processo,"4proc", 1);
+	cria_processo(processo,"4proc", 4);
+	cria_processo(processo,"3proc", 3);
+	cria_processo(processo,"2proc", 2);
+	cria_processo(processo,"1proc", 1);
 	dispara_sistema();
 }
