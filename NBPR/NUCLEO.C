@@ -38,7 +38,7 @@ PTR_DESC_PROC far prox_processo_nivel() {
 	p_aux = fila_atual.inicio;
 
 	/* Caminhar pela fila de processos buscando algum ativo ou chegar ao final da fila. */
-	while (p_aux != NULL && p_aux->estado != ativo){
+	while (p_aux->prox_desc != NULL && p_aux->estado != ativo){
 		p_aux = p_aux->prox_desc;
 	}
 
@@ -203,9 +203,10 @@ void far escalador(){
 	geninterrupt(0x21);
 	a.x.bx1 = _BX;
 	a.x.es1 = _ES;
-
+	printf("askdaijda");
 	while(1){
 		iotransfer();
+		printf("askdaijda");
 		disable();
 		
 		/*  verifica se processo ainda está usando algum recurso do DOS (chamada ao DOS).
@@ -250,4 +251,3 @@ void far termina_processo(){
 	enable();
 	while(1);
 }
-
