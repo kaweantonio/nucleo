@@ -35,6 +35,11 @@ void far processo(){
 }
 
 main(){
+	cria_processo(processo,"9proc", 1);
+	cria_processo(processo,"8proc", 1);
+	cria_processo(processo,"7proc", 1);
+	cria_processo(processo,"6proc", 2);
+	cria_processo(processo,"5proc", 4);
 	cria_processo(processo,"4proc", 4);
 	cria_processo(processo,"3proc", 3);
 	cria_processo(processo,"2proc", 2);
