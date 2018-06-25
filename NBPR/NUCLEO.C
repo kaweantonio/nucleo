@@ -27,15 +27,15 @@ void far iniciar_filas_processos() {
 	/* Se tiver sido, inicializar ponteiros de controle das filas. */
 	for(i = 0; i < MAX_NIVEL_PRIORIDADE; i++) {
 		fila_atual = lista_filas_prioridade[i];
-		fila_atual->inicio = NULL;
-		fila_atual->fim = NULL;
+		fila_atual.inicio = NULL;
+		fila_atual.fim = NULL;
 	}
 }
 
 PTR_DESC_PROC far prox_processo_nivel() {
 	PTR_DESC_PROC p_aux;
 	
-	p_aux = fila_atual->inicio;
+	p_aux = fila_atual.inicio;
 
 	/* Caminhar pela fila de processos buscando algum ativo ou chegar ao final da fila. */
 	while (p_aux != NULL && p_aux->estado != ativo){
@@ -55,8 +55,8 @@ void far mudar_nivel_prioridade() {
 	/* Se desceu nível, adicionar processos do nível anterior à fila atual. */ 
 	if(prox_nivel > 0) {
 		prox_fila = lista_filas_prioridade[prox_nivel];
-		p_aux = prox_fila->fim;
-		p_aux->prox_desc = fila_atual->inicio;
+		p_aux = prox_fila.fim;
+		p_aux->prox_desc = fila_atual.inicio;
 		nivel_atual = prox_nivel;
 		fila_atual = prox_fila;
 	}
@@ -65,7 +65,7 @@ void far mudar_nivel_prioridade() {
 	else {
 		for(i = 0; i < MAX_NIVEL_PRIORIDADE; i++) {
 			prox_fila = lista_filas_prioridade[i];
-			p_aux = prox_fila->fim;
+			p_aux = prox_fila.fim;
 			p_aux->prox_desc = NULL;
 		}
 	}
@@ -138,18 +138,18 @@ void far insere_fila_prontos(PTR_DESC_PROC p, int nivel){
 	}
 
 	/* Atualizar início da fila. */
-	if(lista_filas_prioridade[nivel]->inicio == NULL) {
-		lista_filas_prioridade[nivel]->inicio = p;
+	if(lista_filas_prioridade[nivel].inicio == NULL) {
+		lista_filas_prioridade[nivel].inicio = p;
 	}
 
 	/* Inserir processo no final da fila e atualizar ponteiros. */
-	if(lista_filas_prioridade[nivel]->fim == NULL) {
-		lista_filas_prioridade[nivel]->fim = p;
+	if(lista_filas_prioridade[nivel].fim == NULL) {
+		lista_filas_prioridade[nivel].fim = p;
 	}
 	else {
-		q = lista_filas_prioridade[nivel]->fim;
+		q = lista_filas_prioridade[nivel].fim;
 		q->prox_desc = p;
-		lista_filas_prioridade[nivel]->fim = p;
+		lista_filas_prioridade[nivel].fim = p;
 	}
 }
 
