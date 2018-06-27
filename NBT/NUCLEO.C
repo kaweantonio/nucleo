@@ -335,11 +335,10 @@ void far recebe(char* msg, char* emissor){
 /* Recebe Seletivo */
 void far recebe(char *msg, char* emissor){
 	PTR_DESC_PROC p_aux;
-	int i, flag;
+	int i, tentativas, flag = 0;
 	disable();
-	
-	while(1){
-		flag = 0;
+
+	for (tentativas = 0; tentativas < 20; tentativas++){
 		for (i = 0; i < prim->tam_msg; i++){
 			if (prim->vet_msg[i].flag == nova && strcmp(prim->vet_msg[i].nome_emissor, emissor) == 0){
 				flag = 1;
@@ -358,6 +357,11 @@ void far recebe(char *msg, char* emissor){
 			volta_dos();
 		transfer(p_aux->contexto, prim->contexto);
 		disable();
+	}
+
+	if (!flag) {
+		printf("ERRO: Tempo de espera da primitiva recebe foi excedido!");
+		volta_dos();
 	}
 
 	prim->vet_msg[i].flag = vazia;

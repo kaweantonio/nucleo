@@ -5,6 +5,8 @@ enum retorno{sucesso = 0, proc_inacessivel = 1, fila_cheia = 2};
 
 /*  Teste 1.1 - Status 1 (Fracasso - processo não existe) 
     Nesse teste, o fracasso ocorre devido a um erro de digitação do programador
+
+
 void far proc_emissor(){
     char msg[35] = "Essa mensagem nunca sera lida";
     int status;
@@ -21,9 +23,6 @@ void far proc_receptor(){
     char msg[35];
 
     recebe(msg, "proc_emissor");
-
-    /* como processo nunca receberá mensagem o mesmo não será acordado, logo sistema irá terminar com proc_receptor bloqueado */
-    /*
 
     termina_processo();
 }
@@ -146,8 +145,7 @@ void far proc_receptor(){
 
     Troca de mensagens envolvendo os 20 primeiros números da Sequência de Fibonacci
     a partir do terceiro número da sequência (F2)
-
-*/ 
+*/
 
 int x, y, z, fibo;
 semaforo mutex;
@@ -193,10 +191,11 @@ void far proc_receptor(){
         i++;
     }
     termina_processo();
-} 
+}
+
 
 main() {
-    /* Teste 1.1
+    /* Teste 1.1 
     cria_processo(proc_emissor, "proc_emissor", 1);
     cria_processo(proc_receptor, "proc_receptor", 1);
     */
@@ -205,7 +204,7 @@ main() {
     cria_processo(proc_receptor, "proc_receptor", 1);
     cria_processo(proc_emissor, "proc_emissor", 1);
     */
-
+    
     /* Teste 2 
     cria_processo(proc_emissor, "proc_emissor1", 0);
     cria_processo(proc_emissor2, "proc_emissor2", 0);
@@ -221,6 +220,7 @@ main() {
     cria_processo(proc_emissor, "proc_emissor1", 0);
     cria_processo(proc_emissor, "proc_emissor2", 0);
     cria_processo(proc_receptor, "proc_receptor", 2);
+    
     
     dispara_sistema();
 }
