@@ -301,6 +301,7 @@ int far envia(char* msg, char* receptor){
 }
 
 /* Recebe Não Seletivo */
+/*
 void far recebe(char* msg, char* emissor){
 	PTR_DESC_PROC p_aux;
 	int i;
@@ -315,7 +316,6 @@ void far recebe(char* msg, char* emissor){
 		disable();
 	}
 
-	/* lê mensagem */
 	i = 0;
 	while (prim->vet_msg[i].flag == vazia) {
 		i++;
@@ -323,6 +323,44 @@ void far recebe(char* msg, char* emissor){
 
 	prim->vet_msg[i].flag = vazia;
 	strcpy(emissor, prim->vet_msg[i].nome_emissor);
+	strcpy(msg, prim->vet_msg[i].msg);
+
+	prim->qtde_msg_recebidas--;
+	p_aux = procura_processo_fila_descritores(emissor);	
+	p_aux->estado = ativo;
+	enable();
+}
+*/
+
+/* Recebe Seletivo */
+void far recebe(char *msg, char* emissor){
+	PTR_DESC_PROC p_aux;
+	int i, flag;
+	disable();
+	
+	while(1){
+		flag = 0;
+		for (i = 0; i < prim->tam_msg; i++){
+			if (prim->vet_msg[i].flag == nova && strcmp(prim->vet_msg[i].nome_emissor, emissor) == 0){
+				flag = 1;
+				break;
+			}
+		}
+
+		if (flag) {
+			break;
+		}
+
+		prim->estado = bloq_Rec;
+		p_aux = prim;
+		prim = procura_proximo_ativo();
+		if (prim == NULL) 
+			volta_dos();
+		transfer(p_aux->contexto, prim->contexto);
+		disable();
+	}
+
+	prim->vet_msg[i].flag = vazia;
 	strcpy(msg, prim->vet_msg[i].msg);
 
 	prim->qtde_msg_recebidas--;

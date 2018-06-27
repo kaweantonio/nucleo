@@ -5,7 +5,6 @@ enum retorno{sucesso = 0, proc_inacessivel = 1, fila_cheia = 2};
 
 /*  Teste 1.1 - Status 1 (Fracasso - processo não existe) 
     Nesse teste, o fracasso ocorre devido a um erro de digitação do programador
-
 void far proc_emissor(){
     char msg[35] = "Essa mensagem nunca sera lida";
     int status;
@@ -23,10 +22,12 @@ void far proc_receptor(){
 
     recebe(msg, "proc_emissor");
 
-    // como processo nunca receberá mensagem o mesmo não será acordado, logo sistema irá terminar com proc_receptor bloqueado 
+    /* como processo nunca receberá mensagem o mesmo não será acordado, logo sistema irá terminar com proc_receptor bloqueado */
+    /*
 
     termina_processo();
-}*/
+}
+*/
 
 /*  Teste 1.2 - Status 1 (Fracasso - processo existe mas está terminado) 
 
@@ -107,19 +108,19 @@ void far proc_emissor3(){
     status = envia(msg, "proc_receptor");
     switch(status) {
         case proc_inacessivel:
-            printf("Nao foi possivel encontrar processo destino para enviar a mensagem! Abortar 1\n");
+            printf("Nao foi possivel encontrar processo destino para enviar a mensagem! Abortar 3\n");
         break;
     
         case fila_cheia:
-            printf("Fila cheia 1\n");
+            printf("Fila cheia 3\n");
         break;
 
         case sucesso:
-            printf("Mensagem enviada! 1\n");
+            printf("Mensagem enviada! 3\n");
         break;
 
         default:
-            printf("Erro não especificado. Abortar 1\n");
+            printf("Erro não especificado. Abortar 3\n");
     }
 
     termina_processo();
@@ -129,10 +130,14 @@ void far proc_receptor(){
     char msg[35], emissor[35];
     int i;
 
-    for (i = 0; i < 2; i++){
-        recebe(msg, emissor);
-        printf("Recebeu mensagem %s do processo %s\n\n", msg, emissor);
-    }
+    strcpy(emissor, "proc_emissor1");
+    recebe(msg, emissor);
+    printf("Recebeu mensagem %s do processo %s\n\n", msg, emissor);
+
+    strcpy(emissor, "proc_emissor2");
+    recebe(msg, emissor);
+    printf("Recebeu mensagem %s do processo %s\n\n", msg, emissor);
+    
     termina_processo();
 } 
 */
@@ -141,7 +146,8 @@ void far proc_receptor(){
 
     Troca de mensagens envolvendo os 20 primeiros números da Sequência de Fibonacci
     a partir do terceiro número da sequência (F2)
-*/
+
+*/ 
 
 int x, y, z, fibo;
 semaforo mutex;
@@ -179,7 +185,10 @@ void far proc_receptor(){
     int i = 0;
 
     while (i < 20){
-        recebe(msg, emissor);
+        recebe(msg, "proc_emissor1");
+        printf("Recebeu mensagem[%d] %s do processo %s\n\n", i+1, msg, emissor);
+        i++;
+        recebe(msg, "proc_emissor2");
         printf("Recebeu mensagem[%d] %s do processo %s\n\n", i+1, msg, emissor);
         i++;
     }
@@ -197,12 +206,12 @@ main() {
     cria_processo(proc_emissor, "proc_emissor", 1);
     */
 
-    /* Teste 2
+    /* Teste 2 
     cria_processo(proc_emissor, "proc_emissor1", 0);
     cria_processo(proc_emissor2, "proc_emissor2", 0);
     cria_processo(proc_emissor3, "proc_emissor3", 1);
     cria_processo(proc_receptor, "proc_receptor", 2);
-    */
+    */ 
 
     /* Teste 3 */
     fibo = 2;
@@ -212,5 +221,6 @@ main() {
     cria_processo(proc_emissor, "proc_emissor1", 0);
     cria_processo(proc_emissor, "proc_emissor2", 0);
     cria_processo(proc_receptor, "proc_receptor", 2);
+    
     dispara_sistema();
 }

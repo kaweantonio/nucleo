@@ -71,7 +71,7 @@ extern void far dispara_sistema();
 
 extern void far termina_processo();
 
-extern PTR_DESC_PROC far procura_process_fila_descritores(char *nome_proc);
+extern PTR_DESC_PROC far procura_processo_fila_descritores(char *nome_proc);
 
 extern int far envia(char* msg, char* receptor);
 
