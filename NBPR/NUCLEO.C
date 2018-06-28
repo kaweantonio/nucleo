@@ -19,7 +19,7 @@ PTR_DESC_PROC far prox_processo_nivel() {
 	PTR_DESC_PROC p_aux;
 
 	/* Usando for para passar pelos níveis anteriores */
-	for(i = MAX_NIVEL_PRIORIDADE - 1; i >= nivel_atual; i--) {
+	for(i = nivel_atual; i < MAX_NIVEL_PRIORIDADE; i++) {
 		p_aux = lista_filas_prioridade[i].inicio;
 
 		/* Caminhar pela fila de processos até chegar em NULL (final da fila). */
@@ -32,6 +32,10 @@ PTR_DESC_PROC far prox_processo_nivel() {
 			else {
 				break;
 			}
+		}
+
+		if(p_aux != NULL){
+			break;
 		}
 	}
  
@@ -85,7 +89,7 @@ void far imprime_fila_processos() {
 	PTR_DESC_PROC p_aux;
 
 	for (i = MAX_NIVEL_PRIORIDADE - 1; i >= 0; i--) {
-		printf("\n\t\t --- Nivel %d ---\n", i);
+		printf("\n\t\t --- Nivel %d ---\n", i+1);
 		p_aux = lista_filas_prioridade[i].inicio;
 		do {
 			printf("Nome: %s\t Estado: %s\n", p_aux->nome, estado_processo(p_aux));
