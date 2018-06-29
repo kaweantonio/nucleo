@@ -7,10 +7,18 @@ PTR_DESC_PROC p_salva;
 
 PTR_DESC d_esc; /* ponteiro para o descritor da co-rotina do escalador */
 
+/* Insere no contador do semáforo o valor 'n', fornecido como parâmetro 
+	e inicia fila de processos bloqueados com NULL, indicando que fila está vazia. */
 void far inicia_semaforo(semaforo *sem, unsigned int n){
 	sem->s = n;
 	sem->Q = NULL;
 }
+
+/* Insere processo PRIM na fila Q do semáforo sem que contém os processos bloqueados que estão
+	à espera da primitiva V. Esse procedimento é chamado quando um processo chama a primitiva P
+	num semáforo com 'n' igual a zero. 
+	Se a fila estiver vazia, iniciar no começo da fila. Caso contrário, iterar até encontrar o último
+	processo da fila e colocar PRIM no final da fila. */
 void far insere_fila_bloqueados(semaforo *sem){	
 	PTR_DESC_PROC p_aux;
 
@@ -29,6 +37,8 @@ void far insere_fila_bloqueados(semaforo *sem){
 	prim->fila_sem = NULL;
 }
 
+/* Remove um processo da fila de bloqueados do semáforo e atualiza os ponteiros. Este procedimento
+	é chamado quando um processo chama V em um semáforo com 'n' == 0 e fila não vazia. */
 void far remove_fila_bloqueados(semaforo *sem){
 	PTR_DESC_PROC p_aux;
 	sem->Q->estado = ativo;
@@ -37,6 +47,7 @@ void far remove_fila_bloqueados(semaforo *sem){
 	p_aux->fila_sem = NULL;
 }
 
+/* Inalterado desde a etapa anterior. */
 PTR_DESC_PROC far procura_proximo_ativo(){
 	PTR_DESC_PROC p_aux;
 
@@ -54,6 +65,8 @@ PTR_DESC_PROC far procura_proximo_ativo(){
 	return p_aux;
 }
 
+/* Adicionado casos bloq_Env e bloq_Rec para auxiliar a impressão da fila ao final da
+	execução de todos os processos. */
 char * estado_processo(PTR_DESC_PROC p) {
 	switch(p->estado) {
 		case ativo:
@@ -71,6 +84,8 @@ char * estado_processo(PTR_DESC_PROC p) {
 	}
 }
 
+/*  Função auxiliar usada para imprimir fila de processos e 
+	seus estados ao final da execução de todos os processos do sistema. */
 void far imprime_fila_processos(){
 	PTR_DESC_PROC p_aux;
 	p_aux = p_salva->prox_desc;
@@ -81,13 +96,7 @@ void far imprime_fila_processos(){
 	} while (p_aux != p_salva->prox_desc);
 }
 
-void far imprime_fila_sem(PTR_DESC_PROC Q){
-	PTR_DESC_PROC p = Q;
-	while (p != NULL) {
-		p = p->fila_sem;
-	}
-}
-
+/* Inalterado desde a etapa anterior */
 void far volta_dos(){
 	disable();
 	setvect(8, p_est->int_anterior);
@@ -96,6 +105,7 @@ void far volta_dos(){
 	exit(0);
 }
 
+/* Inalterado desde a etapa anterior */
 void far P(semaforo *sem){
 	PTR_DESC_PROC p_aux;
 	disable();
@@ -113,6 +123,7 @@ void far P(semaforo *sem){
 	}
 }
 
+/* Inalterado desde a etapa anterior */
 void far V(semaforo *sem){
 	disable();
 	if (sem->Q){
@@ -123,6 +134,7 @@ void far V(semaforo *sem){
 	enable();
 }
 
+/* Inalterado desde a etapa anterior */
 void far insere_fila_prontos(PTR_DESC_PROC p){	
 	PTR_DESC_PROC q;
 	if (!prim){
@@ -141,9 +153,10 @@ void far insere_fila_prontos(PTR_DESC_PROC p){
 	p->prox_desc = prim;
 }
 
-/* cria processo e adiciona na fila de processos prontos (por enquanto)
+/* cria processo e adiciona na fila de processos prontos
  |end_proc|  endereço de localização na memória do processo;
- |nome_proc| nome dado pelo usuário para identificação do processo */
+ |nome_proc| nome dado pelo usuário para identificação do processo
+ |tamanho| tamanho da fila de mensagens que o processo poderá receber */
 void far cria_processo(void far(*end_proc)(), char nome_proc[35], int tamanho){
 	PTR_DESC_PROC p_aux;
 	int i;
@@ -180,6 +193,7 @@ void far cria_processo(void far(*end_proc)(), char nome_proc[35], int tamanho){
 	insere_fila_prontos(p_aux);
 }
 
+/* Inalterado desde a etapa anterior */
 void far escalador(){
 	int i;
 	p_est->p_origem = d_esc;
@@ -211,6 +225,7 @@ void far escalador(){
 	}
 }
 
+/* Inalterado desde a etapa anterior */
 void far dispara_sistema(){
 	PTR_DESC desc_dispara;
 	d_esc = cria_desc();
@@ -219,19 +234,7 @@ void far dispara_sistema(){
 	transfer(desc_dispara, d_esc);
 }
 
-/* termina_processo para quando se deseja salvar a fatia de tempo restante que o processo teria caso não tivesse terminado
-void far termina_processo(){
-	PTR_DESC_PROC p_aux;
-	disable();
-	prim->estado = terminado;
-	p_aux = prim;
-	prim = procura_proximo_ativo();
-	if (prim == NULL)
-		volta_dos();
-	transfer(p_aux->contexto, prim->contexto);
-}*/
-
-/* termina_processo que ignora fatia de tempo perdida pelo processo */
+/* Inalterado desde a etapa anterior */
 void far termina_processo(){
 	disable();
 	prim->estado = terminado;
@@ -252,6 +255,9 @@ PTR_DESC_PROC far procura_processo_fila_descritores(char *nome_proc){
 	return NULL;
 }
 
+/* 	Primitiva envia. Envia mensagem para o processo receptor.
+	Retorna status para erro ou sucesso.
+*/
 int far envia(char* msg, char* receptor){
 	PTR_DESC_PROC p_rec, p_aux;
 	int i; 
@@ -332,7 +338,9 @@ void far recebe(char* msg, char* emissor){
 }
 */
 
-/* Recebe Seletivo */
+/* 	Primitiva recebe do tipo Recebe Seletivo.
+	Recebe mensagem enviado por um emissor específico.
+*/
 void far recebe(char *msg, char* emissor){
 	PTR_DESC_PROC p_aux;
 	int i, tentativas, flag = 0;

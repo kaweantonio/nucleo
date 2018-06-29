@@ -222,6 +222,7 @@ void inicializa_prim() {
 	}
 }
 
+/* A unica alteração foi a inclusão da função para inicialização da variável prim. */
 void far escalador(){
 	int i;
 

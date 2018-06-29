@@ -80,6 +80,8 @@ char * estado_processo(PTR_DESC_PROC p) {
 	}
 }
 
+/*  Função auxiliar usada para imprimir fila de processos e 
+	seus estados ao final da execução de todos os processos do sistema. */
 void far imprime_fila_processos(){
 	PTR_DESC_PROC p_aux;
 	p_aux = p_salva->prox_desc;
@@ -90,13 +92,9 @@ void far imprime_fila_processos(){
 	} while (p_aux != p_salva->prox_desc);
 }
 
-void far imprime_fila_sem(PTR_DESC_PROC Q){
-	PTR_DESC_PROC p = Q;
-	while (p != NULL) {
-		p = p->fila_sem;
-	}
-}
-
+/* 	Restaura a rotina de interrupção do timer e finaliza execução do sistema
+	imprimindo a fila de processos para verificação.
+*/
 void far volta_dos(){
 	disable();
 	setvect(8, p_est->int_anterior);
@@ -105,8 +103,10 @@ void far volta_dos(){
 	exit(0);
 }
 
-/* Primitiva P. Se contador do semáforo for maior que zero 
-	*/
+/* 	Primitiva P. Se contador do semáforo for maior que zero,
+	decrementa o contador. Caso contrário, insere processo
+	na fila de processos bloqueados do semáforo sem.	
+*/
 void far P(semaforo *sem){
 	PTR_DESC_PROC p_aux;
 	disable();
@@ -124,6 +124,10 @@ void far P(semaforo *sem){
 	}
 }
 
+/* 	Primitiva V. Se há processo na fila Q, remove 
+	o processo da fila de bloqueados do processos.
+	Caso contrário, incremente contador do semáforo.
+*/
 void far V(semaforo *sem){
 	disable();
 	if (sem->Q){
@@ -134,8 +138,12 @@ void far V(semaforo *sem){
 	enable();
 }
 
+/* Insere processo p na fila de processos prontos.
+*/
 void far insere_fila_prontos(PTR_DESC_PROC p){	
 	PTR_DESC_PROC q;
+
+	/* Se prim for NULL, inicializa prim como p*/
 	if (!prim){
 		prim = p;
 		prim->prox_desc = prim;
@@ -144,10 +152,12 @@ void far insere_fila_prontos(PTR_DESC_PROC p){
 	
 	q = prim;
 
+	/* caminha na fila de processos até encontrar prim */
 	while (q->prox_desc != prim){
 		q = q->prox_desc;
 	}
 
+	/* insere processo p na fila */
 	q->prox_desc = p;
 	p->prox_desc = prim;
 }
@@ -203,6 +213,7 @@ void far escalador(){
 	}
 }
 
+/* Função auxiliar para inicializar sistema chamando o escalador */
 void far dispara_sistema(){
 	PTR_DESC desc_dispara;
 	d_esc = cria_desc();

@@ -7,6 +7,10 @@ PTR_DESC_PROC p_salva;
 
 PTR_DESC d_esc; /* ponteiro para o descritor da co-rotina do escalador */
 
+/* 	Função que retorna próximo processo ativo
+	ao caminhar pela fila de descritores.
+	Caso não haja um processo ativo, é tratado como erro, e retorna NULL.
+*/
 PTR_DESC_PROC far procura_proximo_ativo(){
 	PTR_DESC_PROC p_aux;
 
@@ -24,6 +28,8 @@ PTR_DESC_PROC far procura_proximo_ativo(){
 	return p_aux;
 }
 
+/* 	Função auxiliar para retornar uma string do estado do processo. 
+	Ela será usada junto à função 'imprime_fila_processos'. */
 char * estado_processo(PTR_DESC_PROC p) {
 	switch(p->estado) {
 		case ativo:
@@ -35,6 +41,8 @@ char * estado_processo(PTR_DESC_PROC p) {
 	}
 }
 
+/*  Função auxiliar usada para imprimir fila de processos e 
+	seus estados ao final da execução de todos os processos do sistema. */	
 void far imprime_fila_processos(){
 	PTR_DESC_PROC p_aux;
 	p_aux = p_salva->prox_desc;
@@ -45,6 +53,9 @@ void far imprime_fila_processos(){
 	} while (p_aux != p_salva->prox_desc);
 }
 
+/* 	Restaura a rotina de interrupção do timer e finaliza execução do sistema
+	imprimindo a fila de processos para verificação.
+*/
 void far volta_dos(){
 	disable();
 	setvect(8, p_est->int_anterior);
@@ -53,6 +64,8 @@ void far volta_dos(){
 	exit(0);
 }
 
+/* Insere processo p na fila de processos prontos.
+*/
 void far insere_fila_prontos(PTR_DESC_PROC p){	
 	PTR_DESC_PROC q;
 	if (!prim){
@@ -71,7 +84,7 @@ void far insere_fila_prontos(PTR_DESC_PROC p){
 	p->prox_desc = prim;
 }
 
-/* cria processo e adiciona na fila de processos prontos (por enquanto)
+/* cria processo e adiciona na fila de processos prontos 
  |end_proc|  endereço de localização na memória do processo;
  |nome_proc| nome dado pelo usuário para identificação do processo */
 void far cria_processo(void far(*end_proc)(), char nome_proc[35]){
@@ -91,6 +104,8 @@ void far cria_processo(void far(*end_proc)(), char nome_proc[35]){
 	insere_fila_prontos(p_aux);
 }
 
+/*	Responsável por escalonar os processo que irão controlar a UCP.
+*/
 void far escalador(){
 	int i;
 	p_est->p_origem = d_esc;
