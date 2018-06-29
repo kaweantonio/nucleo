@@ -7,10 +7,18 @@ PTR_DESC_PROC p_salva;
 
 PTR_DESC d_esc; /* ponteiro para o descritor da co-rotina do escalador */
 
+/* Insere no contador do semáforo o valor 'n', fornecido como parâmetro 
+	e inicia fila de processos bloqueados com NULL, indicando que fila está vazia. */
 void far inicia_semaforo(semaforo *sem, unsigned int n){
 	sem->s = n;
 	sem->Q = NULL;
 }
+
+/* Insere processo PRIM na fila Q do semáforo sem que contém os processos bloqueados que estão
+	à espera da primitiva V. Esse procedimento é chamado quando um processo chama a primitiva P
+	num semáforo com 'n' igual a zero. 
+	Se a fila estiver vazia, iniciar no começo da fila. Caso contrário, iterar até encontrar o último
+	processo da fila e colocar PRIM no final da fila. */
 void far insere_fila_bloqueados(semaforo *sem){	
 	PTR_DESC_PROC p_aux;
 
@@ -29,6 +37,8 @@ void far insere_fila_bloqueados(semaforo *sem){
 	prim->fila_sem = NULL;
 }
 
+/* Remove um processo da fila de bloqueados do semáforo e atualiza os ponteiros. Este procedimento
+	é chamado quando um processo chama V em um semáforo com 'n' == 0 e fila não vazia. */
 void far remove_fila_bloqueados(semaforo *sem){
 	PTR_DESC_PROC p_aux;
 	sem->Q->estado = ativo;
@@ -37,6 +47,7 @@ void far remove_fila_bloqueados(semaforo *sem){
 	p_aux->fila_sem = NULL;
 }
 
+/* Inalterado desde a etapa anterior. */
 PTR_DESC_PROC far procura_proximo_ativo(){
 	PTR_DESC_PROC p_aux;
 
@@ -54,6 +65,8 @@ PTR_DESC_PROC far procura_proximo_ativo(){
 	return p_aux;
 }
 
+/* Adicionado caso bloq_P para auxiliar a impressão da fila ao final da
+	execução de todos os processos. */
 char * estado_processo(PTR_DESC_PROC p) {
 	switch(p->estado) {
 		case ativo:
@@ -92,6 +105,8 @@ void far volta_dos(){
 	exit(0);
 }
 
+/* Primitiva P. Se contador do semáforo for maior que zero 
+	*/
 void far P(semaforo *sem){
 	PTR_DESC_PROC p_aux;
 	disable();
