@@ -1,6 +1,6 @@
 #include "C:\NBS\prodcons.h"
 
-FILE *input, *output, *log;
+FILE *input, *output;
 /* Long unsigned porque tamanho do arquivo pode ser muito grande, aí não caberia no int. */
 long unsigned int size, max_buffer, pos_atual = 0, it_serv = 0;
 /* Unsigned char para não perder dados do bit mais significativo, 
@@ -15,15 +15,11 @@ unsigned char far servidor() {
 		um unsigned char tem exatamente um byte de tamanho, mas não coloquei porque
 		como estava dando erro, talvez pudesse ser disso. */
 	fread(&novo_byte, sizeof(unsigned char), 1, input);
-	/* Salvar no log qual o byte escrito no buffer. */
-	fprintf(log, "Servidor %d: %02x\n", it_serv++, novo_byte);
 	return novo_byte;
 }
 
 /* Função que será chamada pelo consumidor (consome) */
 void far cliente(unsigned char novo_byte) {
-	/* Salvar no log qual o byte lido. */
-	fprintf(log, "Cliente %d: %02x\n", pos_atual, novo_byte);
 	/* Salvar no arquivo de saída o dado lido e avançar o iterador para próxima posição*/
 	download_servidor[pos_atual++] = novo_byte;
 }
@@ -55,11 +51,9 @@ void far salva_dados() {
 	free(download_servidor);
 	/* Fechar últimos dois arquivos */
 	fclose(output);
-	fclose(log);
 }
 
 void far main() {
-	log = fopen("C:\\NBS\\LOGPRCN.txt", "w"); /* modo de acesso: escrita */
 	input = fopen("C:\\NBS\\IMGIN.jpg", "rb"); /* modo de acesso: leitura de arquivo binário */
 	output = fopen("C:\\NBS\\IMGOUT.jpg", "wb"); /* modo de acesso: escrita de arquivo binário */
 	configurar();
