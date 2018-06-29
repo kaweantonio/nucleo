@@ -9,16 +9,18 @@ PTR_DESC_PROC p_salva; /* salvar último PRIM caso dê algum erro. */
 
 PTR_DESC d_esc; /* ponteiro para o descritor da co-rotina do escalador */
 
-FILA_PRIORIDADE *lista_filas_prioridade = NULL;
-FILA_PRIORIDADE fila_atual;
+FILA_PRIORIDADE *lista_filas_prioridade = NULL; /* vetor que conterá as filas de prioridade */
+FILA_PRIORIDADE fila_atual; /* ponteiro para a fila de prioridades em uso */
 
-int nivel_atual = MAX_NIVEL_PRIORIDADE - 1;
+int nivel_atual = MAX_NIVEL_PRIORIDADE - 1; /* inicia no nível mais alto */
 
 PTR_DESC_PROC far prox_processo_nivel() {
 	int i;
-	PTR_DESC_PROC p_aux;
+	PTR_DESC_PROC p_aux; /* ponteiro auxiliar que será usado para caminhar pela fila de processos */
 
 	/* Usando for para passar pelos níveis anteriores */
+	/* Inicia no nível atual e vai até o nível máximo. Isso simula a redução de prioridade dos processos */
+	/* quando há alteração do nível. */
 	for(i = nivel_atual; i < MAX_NIVEL_PRIORIDADE; i++) {
 		p_aux = lista_filas_prioridade[i].inicio;
 
@@ -29,11 +31,12 @@ PTR_DESC_PROC far prox_processo_nivel() {
 			if(p_aux->estado != ativo) {
 				p_aux = p_aux->prox_desc;
 			}
-			else {
+			else { /* Quando encontrar algum com estado == ativo, sair do laço. */
 				break;
 			}
 		}
 
+		/* Usado para sair do laço mais externo. */
 		if(p_aux != NULL){
 			break;
 		}
@@ -43,7 +46,10 @@ PTR_DESC_PROC far prox_processo_nivel() {
 }
 
 void far mudar_nivel_prioridade() {
+	/* Se o nível for diferente de zero, decrementar. Em caso contrário, retornar ao valor máximo. */
 	nivel_atual = nivel_atual == 0 ? MAX_NIVEL_PRIORIDADE - 1 : nivel_atual - 1;
+
+	/* Atualizar ponteiro da fila_atual. */
 	fila_atual = lista_filas_prioridade[nivel_atual];
 }
 
@@ -56,10 +62,12 @@ PTR_DESC_PROC far procura_proximo_ativo(){
 	if(p_aux == NULL) {
 		/*  Iterar pela fila de prioridades. Como a fila atual já foi verificada,
 			iniciar contador em 1. */
-		for(i = 1; i < MAX_NIVEL_PRIORIDADE; i++) { 
+		for(i = 1; i < MAX_NIVEL_PRIORIDADE; i++) {
+			/* Mudar nível de prioridade e procurar processo ativo no novo nível */ 
 			mudar_nivel_prioridade();
 			p_aux = prox_processo_nivel();
 
+			/* Se encontrar algum processo ativo, parar repetição. */
 			if(p_aux != NULL) {
 				break;
 			}
@@ -173,13 +181,13 @@ void far cria_processo(void far(*end_proc)(), char nome_proc[35], unsigned int p
 	/* Se for maior que máximo, colocar máximo. */
 	prioridade_corrigida = prioridade_corrigida > MAX_NIVEL_PRIORIDADE ? MAX_NIVEL_PRIORIDADE : prioridade_corrigida;
 
+	/* Decrementar prioridade, pois os vetores são indexados com início em zero. */
 	prioridade_corrigida--;
 
 	/* inicialização dos campos do descritor */
 	strcpy(p_aux->nome, nome_proc);
 	p_aux->estado = ativo;
 	p_aux->prioridade = prioridade_corrigida;
-	p_aux->fatias_restantes = prioridade_corrigida;
 	p_aux->contexto = cria_desc();
 	p_aux->prox_desc = NULL;
 	newprocess(end_proc, p_aux->contexto);
@@ -196,6 +204,8 @@ void inicializa_prim() {
 	int i;
 	PTR_DESC_PROC p_aux;
 
+	/* Buscar processo no nível de prioridade mais alto */
+	/* Se não encontrar, buscar nos níveis inferiores. */
 	for(i = MAX_NIVEL_PRIORIDADE - 1; i >= 0; i--) {
 		p_aux = lista_filas_prioridade[i].inicio;
 		if(p_aux != NULL) {
@@ -207,7 +217,7 @@ void inicializa_prim() {
 	if(p_aux == NULL) {
 		volta_dos();
 	}
-	else {
+	else { /* Caso contrário, atribuir a PRIM o processo encontrado. */
 		prim = p_aux;
 	}
 }
@@ -238,21 +248,11 @@ void far escalador(){
 		*/
 		if (*a.y == 0) {
 
-			/* Verificar se ainda é necessário dar mais fatias ao mesmo processo */
-			if(prim->fatias_restantes == 0) { /* Quantidade já acabou */
+			prim = procura_proximo_ativo();
+			if (prim == NULL)
+				volta_dos();
+			p_est->p_destino = prim->contexto;
 
-				/*  Restaurar valor do contador auxiliar de prioridade.
-					Isso deve ser feito para que não tenha problemas
-					na próxima vez que ele seja escalado. */
-				prim->fatias_restantes = prim->prioridade;
-				prim = procura_proximo_ativo();
-				if (prim == NULL)
-					volta_dos();
-				p_est->p_destino = prim->contexto;
-			}
-			else { /* Ainda há fatias. Não trocar o processo, apenas decrementar contador. */
-				prim->fatias_restantes--;
-			}
 		}
 		enable();
 	}

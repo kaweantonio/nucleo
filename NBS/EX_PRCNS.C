@@ -65,29 +65,3 @@ void far main() {
 	configurar();
 	iniciar_PRODCONS(max_buffer, size, servidor, cliente, salva_dados);
 }
-
-
-/* -------------------------- TESTE -------------------------*/
-/*
-FILE *input, *output, *log;
-int tamanho = 200, max_buffer = 20, pos_prod = 0, pos_cons = 0;
-char it_serv = 96;
-
-unsigned char far func_produz() {
-	fprintf(log, "Produziu (%d): %c\n", pos_prod++, ++it_serv);
-	return it_serv;
-}
-
-void far func_consome(unsigned char lido) {
-	fprintf(log, "Consumiu (%d): %c\n", pos_cons++, lido);
-}
-
-void far func_retorna() {
-	printf("ACABOU");
-}
-
-void far main() {
-	log = fopen("LOGPRCN.txt", "w");
-	iniciar_PRODCONS(max_buffer, tamanho, func_produz, func_consome, func_retorna);
-}
-*/

@@ -1,5 +1,4 @@
 #include "C:\NBPS\nucleo.h"
-#include <time.h>
 #include <limits.h>
 
 void far processo(){
@@ -9,12 +8,6 @@ void far processo(){
 	char nome_processo[35], numero_processo;
 	unsigned int prioridade; 
 
-	/* Variável usadas para calcular quantidade de clocks usadas no programa. */
-	clock_t tempo_execucao;
-
-	/* Registrar início da execução do processo. */
-	tempo_execucao = clock();
-
 	/* Buscar informações do processo atual. */
 	informacoes_processo(nome_processo, &prioridade);
 
@@ -22,15 +15,14 @@ void far processo(){
 		O número é o primeiro caracter do nome do processo. */
 	numero_processo = nome_processo[0];
 
+	/* Contar de zero a INT_MAX várias vezes */
 	for(i = 0; i < 50; i++) {
 		while(++j < INT_MAX);
 		j = 0;
 	}
 
-	/* Registrar término da execução do processo. */
-	tempo_execucao = clock() - tempo_execucao;
-
-	printf("Processo %c, com prioridade %u, levou %d clocks para terminar.\n\n", numero_processo, prioridade + 1, tempo_execucao);
+	/* Emitir aviso de que o processo terminou sua execução. */
+	printf("Processo %c, com prioridade %u, terminou.\n\n", numero_processo, prioridade + 1);
 	termina_processo();
 }
 
